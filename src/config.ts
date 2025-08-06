@@ -12,7 +12,7 @@ export const themeConfig: ThemeConfig = {
     // use i18n title/subtitle/description from src/i18n/ui.ts instead of static ones above
     i18nTitle: false, // true, false
     // author name
-    author: 'cizai',
+    author: 'zang',
     // site url
     url: 'https://wl.do',
     // favicon url
@@ -158,10 +158,6 @@ export const themeConfig: ThemeConfig = {
   footer: {
     // social links
     links: [
-      {
-        name: 'RSS',
-        url: '/atom.xml', // or /rss.xml
-      },
       {
         name: 'GitHub',
         url: 'https://github.com/CiZaii',
