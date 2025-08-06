@@ -6,7 +6,6 @@ updated: 2025-08-06
 tags:
   - RabbitMQ
   - 消息中间件
-pin: 99
 lang: zh
 abbrlink: rabbitmq-message-backlog-handling
 aicommit: >-
