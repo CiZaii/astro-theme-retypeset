@@ -6,6 +6,7 @@ import PostDate from '@/components/PostDate.astro'
 import TagList from '@/components/TagList.astro'
 import BackButton from '@/components/Widgets/BackButton.astro'
 import TOC from '@/components/Widgets/TOC.astro'
+import TypewriterEffect from '@/components/Widgets/TypewriterEffect.astro'
 import { allLocales, defaultLocale, moreLocales } from '@/config'
 import Layout from '@/layouts/Layout.astro'
 import { checkPostSlugDuplication } from '@/utils/content'
@@ -137,6 +138,10 @@ const { Content, headings, remarkPluginFrontmatter } = await render(post)
     {post.data.toc && <TOC headings={headings} />}
     <!-- Content -->
     <div id="post-content">
+      <!-- AI Commit Typewriter Effect -->
+      {post.data.aicommit && post.data.aicommit.trim() && (
+        <TypewriterEffect text={post.data.aicommit} />
+      )}
       <Content />
       <!-- Copyright -->
       <div id="post-copyright" />

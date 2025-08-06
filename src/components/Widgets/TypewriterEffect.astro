@@ -1,0 +1,192 @@
+---
+export interface Props {
+  text: string
+  speed?: number
+}
+
+const { text, speed = 80 } = Astro.props
+---
+
+<div class="typewriter-window" id="typewriter-container">
+  <div class="typewriter-header">
+    <div class="typewriter-controls">
+      <span class="control-dot control-red"></span>
+      <span class="control-dot control-yellow"></span>
+      <span class="control-dot control-green"></span>
+    </div>
+    <div class="typewriter-title">AI 总结</div>
+  </div>
+  <div class="typewriter-content">
+    <div class="typewriter-prompt">
+      <span class="prompt-symbol">$</span>
+      <div class="typewriter-content-area">
+        <span class="typewriter-text" id="typewriter-text" data-text={text} data-speed={speed}></span><span class="typewriter-cursor" id="typewriter-cursor">|</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .typewriter-window {
+    @apply bg-primary/5 border border-secondary/10 rounded-lg mb-6 overflow-hidden shadow-lg;
+    @apply dark:bg-secondary/5 dark:border-secondary/20;
+    backdrop-filter: blur(10px);
+  }
+
+  .typewriter-header {
+    @apply flex items-center justify-between px-4 py-2 bg-secondary/5 border-b border-secondary/10;
+    @apply dark:bg-primary/5 dark:border-secondary/20;
+  }
+
+  .typewriter-controls {
+    @apply flex gap-2;
+  }
+
+  .control-dot {
+    @apply w-3 h-3 rounded-full;
+  }
+
+  .control-red {
+    @apply bg-red-500;
+  }
+
+  .control-yellow {
+    @apply bg-yellow-500;
+  }
+
+  .control-green {
+    @apply bg-green-500;
+  }
+
+  .typewriter-title {
+    @apply text-sm text-secondary font-mono;
+  }
+
+  .typewriter-content {
+    @apply p-4;
+  }
+
+  .typewriter-prompt {
+    @apply font-mono text-sm flex items-start;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  .prompt-symbol {
+    @apply text-green-500 font-bold;
+    flex-shrink: 0;
+    margin-right: 8px;
+  }
+
+  .typewriter-content-area {
+    @apply flex-1;
+    line-height: 1.25rem;
+  }
+
+  .typewriter-text {
+    @apply text-primary;
+    display: inline;
+  }
+
+  .typewriter-cursor {
+    @apply text-primary;
+    display: inline;
+    animation: blink 1s infinite;
+  }
+
+  .typewriter-cursor.typing {
+    animation: none;
+  }
+
+  @keyframes blink {
+    0%, 50% {
+      opacity: 1;
+    }
+    51%, 100% {
+      opacity: 0;
+    }
+  }
+</style>
+
+<script>
+class TypewriterEffect {
+  private textElement: HTMLElement
+  private cursorElement: HTMLElement
+  private text: string
+  private speed: number
+  private currentIndex: number = 0
+
+  constructor(textElement: HTMLElement, cursorElement: HTMLElement, text: string, speed: number) {
+    this.textElement = textElement
+    this.cursorElement = cursorElement
+    this.text = text
+    this.speed = speed
+  }
+
+  async start() {
+    if (!this.text.trim())
+      return
+
+    // Add typing class to stop cursor blinking
+    this.cursorElement.classList.add('typing')
+
+    // Add initial delay before starting typing
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    for (let i = 0; i <= this.text.length; i++) {
+      this.textElement.textContent = this.text.slice(0, i)
+
+      // Vary the speed for more natural typing
+      let currentSpeed = this.speed
+      if (i === 1) {
+        // First character appears faster
+        currentSpeed = this.speed * 0.3
+      }
+      else if (this.text[i - 1] === ' ') {
+        // Pause after spaces
+        currentSpeed = this.speed * 1.5
+      }
+      else if (['，', '。', '！', '？', ',', '.', '!', '?'].includes(this.text[i - 1])) {
+        // Pause after punctuation
+        currentSpeed = this.speed * 2
+      }
+
+      await new Promise(resolve => setTimeout(resolve, currentSpeed))
+    }
+
+    // Remove typing class to resume cursor blinking
+    this.cursorElement.classList.remove('typing')
+  }
+}
+
+function initializeTypewriter() {
+  const textElement = document.getElementById('typewriter-text')
+  const cursorElement = document.getElementById('typewriter-cursor')
+
+  if (!textElement || !cursorElement)
+    return
+
+  const text = textElement.getAttribute('data-text') || ''
+  const speed = Number.parseInt(textElement.getAttribute('data-speed') || '50')
+
+  if (text.trim()) {
+    const typewriter = new TypewriterEffect(textElement, cursorElement, text, speed)
+
+    // Start typing animation after a short delay
+    setTimeout(() => {
+      typewriter.start()
+    }, 100)
+  }
+}
+
+// Initialize when DOM is loaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeTypewriter)
+}
+else {
+  initializeTypewriter()
+}
+
+// Re-initialize on view transitions
+document.addEventListener('astro:page-load', initializeTypewriter)
+</script>
