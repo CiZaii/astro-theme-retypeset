@@ -155,15 +155,3 @@ GitHub 仓库：https://github.com/alibaba/arthas
 在线教程：https://arthas.aliyun.com/doc/arthas-tutorials.html  
 社区论坛：https://github.com/alibaba/arthas/discussions  
 
-以上文章适合用作技术教程和学习资料，结构清晰，方便阅读和实践。
-
-[1] https://blog.csdn.net/LearnerDL/article/details/138424916
-[2] https://blog.csdn.net/Zyw907155124/article/details/136058115
-[3] https://arthas.aliyun.com/doc/expert/user-question-history11442.html
-[4] https://arthas.aliyun.com
-[5] https://arthas.aliyun.com/doc/
-[6] https://www.cnblogs.com/itxiaoshen/p/15854197.html
-[7] https://arthas.aliyun.com/doc/expert/user-question-history15167.html
-[8] https://www.alibabacloud.com/help/zh/arms/application-monitoring/user-guide/arthas-diagnosis
-[9] https://blog.csdn.net/qq_43692950/article/details/122686329
-[10] https://www.aneasystone.com/archives/2023/09/trouble-shooting-with-arthas.html
