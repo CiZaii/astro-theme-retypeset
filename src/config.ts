@@ -4,7 +4,7 @@ export const themeConfig: ThemeConfig = {
   // SITE INFORMATION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START
   site: {
     // site title
-    title: 'Retypeset',
+    title: 'Zang blog',
     // site subtitle
     subtitle: 'Revive the beauty of typography',
     // site description
@@ -12,9 +12,9 @@ export const themeConfig: ThemeConfig = {
     // use i18n title/subtitle/description from src/i18n/ui.ts instead of static ones above
     i18nTitle: true, // true, false
     // author name
-    author: 'radishzz',
+    author: 'cizai',
     // site url
-    url: 'https://retypeset.radishzz.cc',
+    url: 'https://wl.do',
     // favicon url
     // recommended formats: svg, png or ico
     favicon: '/icons/favicon.svg', // or https://example.com/favicon.svg
@@ -164,11 +164,11 @@ export const themeConfig: ThemeConfig = {
       },
       {
         name: 'GitHub',
-        url: 'https://github.com/radishzzz/astro-theme-retypeset',
+        url: 'https://github.com/CiZaii',
       },
       {
         name: 'Email',
-        url: 'email@radishzz.cc',
+        url: 'zang@linux.do',
       },
       // {
       //   name: 'X',
