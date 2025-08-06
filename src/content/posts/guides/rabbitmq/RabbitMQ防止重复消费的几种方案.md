@@ -437,4 +437,4 @@ public class MessageDedupService {
 | 中等规模系统 | Redis SET + TTL               |
 | 大规模系统 | 分区Bitmap + Redis集群         |
 
-> 记住：没有银弹方案，选择最适合你业务场景的技术方案才是最好的！
+> 记住：选择最适合你业务场景的技术方案才是最好的！
