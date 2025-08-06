@@ -8,7 +8,7 @@ pin: 1
 lang: zh
 abbrlink: git-commit-message-guidelines
 aicommit: >-
-  这里是Cizai-AI，这篇文章介绍了Git操作规约，主要涵盖了Git Flow模型、提交日志规约和分支命名规约。Git
+  这里是Zang-AI，这篇文章介绍了Git操作规约，主要涵盖了Git Flow模型、提交日志规约和分支命名规约。Git
   Flow模型定义了Master、Develop、Feature、Release和Hotfix等分支及其用途，旨在提升团队协作和版本稳定性。提交日志规约规定了“类型范围主题”的格式，明确了不同类型如新功能修复等含义，并对范围和主题的编写提出了要求。分支命名规约则采用“类型时间描述开发者”的格式，详细说明了各部分的规范，以实现清晰化管理。
 ---
 ## Git操作规约
