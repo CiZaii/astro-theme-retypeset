@@ -1,6 +1,6 @@
 ---
 title: RabbitMQ防止重复消费的几种方案
-description: 🚀深入分析RabbitMQ消息去重的多种技术方案，包括Bitmap、布隆过滤器、分区设计等，提供完整的实现思路和性能对比
+description: 深入分析RabbitMQ消息去重的多种技术方案，包括Bitmap、布隆过滤器、分区设计等，提供完整的实现思路和性能对比
 published: 2025-08-05
 updated: 2025-08-06
 tags:
