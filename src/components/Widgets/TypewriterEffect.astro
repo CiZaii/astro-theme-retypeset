@@ -19,7 +19,7 @@ const { text, speed = 80 } = Astro.props
   <div class="typewriter-content">
     <div class="typewriter-prompt">
       <span class="prompt-symbol">$</span>
-      <div class="typewriter-content-area">
+      <div class="typewriter-content-area" data-full-text={text}>
         <span class="typewriter-text" id="typewriter-text" data-text={text} data-speed={speed}></span><span class="typewriter-cursor" id="typewriter-cursor">|</span>
       </div>
     </div>
@@ -64,6 +64,8 @@ const { text, speed = 80 } = Astro.props
 
   .typewriter-content {
     @apply p-4;
+    /* Pre-calculate and fix minimum height to prevent jumping */
+    min-height: calc(1.25rem * 3); /* Assume at least 3 lines */
   }
 
   .typewriter-prompt {
@@ -81,17 +83,40 @@ const { text, speed = 80 } = Astro.props
   .typewriter-content-area {
     @apply flex-1;
     line-height: 1.25rem;
+    /* Create invisible placeholder to maintain height */
+    position: relative;
+  }
+
+  /* Hidden placeholder to maintain container height */
+  .typewriter-content-area::after {
+    content: attr(data-full-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    visibility: hidden;
+    height: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    pointer-events: none;
+    line-height: 1.25rem;
+    z-index: -1;
   }
 
   .typewriter-text {
     @apply text-primary;
     display: inline;
+    /* Ensure the text area maintains proper positioning */
+    position: relative;
+    z-index: 1;
   }
 
   .typewriter-cursor {
     @apply text-primary;
     display: inline;
     animation: blink 1s infinite;
+    position: relative;
+    z-index: 1;
   }
 
   .typewriter-cursor.typing {
