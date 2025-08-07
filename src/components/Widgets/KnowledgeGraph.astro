@@ -1,0 +1,373 @@
+---
+// KnowledgeGraph.astro - 知识图谱可视化组件
+export interface Props {
+  knowledgeGraph: {
+    nodes: Array<{
+      id: string
+      label: string
+      type: string
+      description?: string
+      importance?: number
+      category?: 'primary' | 'secondary' | 'tertiary'
+    }>
+    edges: Array<{
+      id: string
+      source: string
+      target: string
+      type: string
+      label?: string
+      weight?: number
+    }>
+    metadata?: {
+      extracted_at?: string
+      entity_count?: number
+      relation_count?: number
+      confidence?: number
+    }
+  }
+}
+
+const { knowledgeGraph } = Astro.props
+---
+
+<div class="knowledge-graph-container">
+  <div class="knowledge-graph-header">
+    <h3 class="mb-2 text-lg font-semibold">📊 知识图谱</h3>
+    {knowledgeGraph?.metadata && (
+      <div class="graph-stats mb-4 text-sm text-gray-600 dark:text-gray-400">
+        <span>实体: {knowledgeGraph.metadata.entity_count || 0}</span>
+        <span class="mx-2">•</span>
+        <span>关系: {knowledgeGraph.metadata.relation_count || 0}</span>
+        {knowledgeGraph.metadata.confidence && (
+          <>
+            <span class="mx-2">•</span>
+            <span>置信度: {Math.round((knowledgeGraph.metadata.confidence || 0) * 100)}%</span>
+          </>
+        )}
+      </div>
+    )}
+  </div>
+
+  <div class="knowledge-graph-wrapper overflow-hidden border border-gray-200 rounded-lg bg-white dark:border-gray-700 dark:bg-gray-800">
+    <div class="graph-toolbar flex items-center justify-between border-b border-gray-200 bg-gray-50 p-3 dark:border-gray-600 dark:bg-gray-700/50">
+      <div class="toolbar-left flex items-center space-x-2">
+        <button
+          class="kg-zoom-in rounded bg-blue-500 px-2 py-1 text-xs text-white transition-colors hover:bg-blue-600"
+          title="放大"
+        >
+          🔍+
+        </button>
+        <button
+          class="kg-zoom-out rounded bg-blue-500 px-2 py-1 text-xs text-white transition-colors hover:bg-blue-600"
+          title="缩小"
+        >
+          🔍-
+        </button>
+        <button
+          class="kg-reset rounded bg-gray-500 px-2 py-1 text-xs text-white transition-colors hover:bg-gray-600"
+          title="重置视图"
+        >
+          ⟲
+        </button>
+      </div>
+
+      <div class="toolbar-right flex items-center space-x-2">
+        <div class="graph-legend flex items-center text-xs space-x-3">
+          <div class="legend-item flex items-center">
+            <div class="mr-1 h-3 w-3 rounded-full bg-red-400"></div>
+            <span class="text-gray-600 dark:text-gray-300">重要</span>
+          </div>
+          <div class="legend-item flex items-center">
+            <div class="mr-1 h-3 w-3 rounded-full bg-yellow-400"></div>
+            <span class="text-gray-600 dark:text-gray-300">一般</span>
+          </div>
+          <div class="legend-item flex items-center">
+            <div class="mr-1 h-3 w-3 rounded-full bg-gray-400"></div>
+            <span class="text-gray-600 dark:text-gray-300">次要</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="knowledge-graph-svg" class="relative h-96 w-full overflow-hidden from-blue-50/30 to-purple-50/30 bg-gradient-to-br dark:from-gray-800 dark:to-gray-700">
+      <svg width="100%" height="100%" class="knowledge-graph-svg">
+        <defs>
+          <marker
+            id="arrowhead"
+            markerWidth="10"
+            markerHeight="7"
+            refX="9"
+            refY="3.5"
+            orient="auto"
+          >
+            <polygon
+              points="0 0, 10 3.5, 0 7"
+              class="fill-gray-400 dark:fill-gray-500"
+            />
+          </marker>
+        </defs>
+      </svg>
+
+      <div class="graph-tooltip pointer-events-none invisible absolute z-10 max-w-xs rounded bg-black/80 px-2 py-1 text-xs text-white">
+        <div class="tooltip-content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline define:vars={{ knowledgeGraph }}>
+// 知识图谱可视化脚本
+(function () {
+  if (!knowledgeGraph || !knowledgeGraph.nodes || !knowledgeGraph.edges) {
+    console.warn('没有知识图谱数据')
+    return
+  }
+
+  // 动态加载D3.js CDN
+  function loadD3() {
+    return new Promise((resolve, reject) => {
+      if (window.d3) {
+        resolve(window.d3)
+        return
+      }
+
+      const script = document.createElement('script')
+      script.src = 'https://unpkg.com/d3@7/dist/d3.min.js'
+      script.onload = () => resolve(window.d3)
+      script.onerror = reject
+      document.head.appendChild(script)
+    })
+  }
+
+  loadD3().then((d3) => {
+    initKnowledgeGraph(d3)
+  }).catch((error) => {
+    console.error('Failed to load D3.js:', error)
+  })
+
+  function initKnowledgeGraph(d3) {
+    const container = document.querySelector('#knowledge-graph-svg')
+    if (!container)
+      return
+
+    const svg = container.querySelector('svg')
+    const tooltip = container.querySelector('.graph-tooltip')
+
+    // 清空现有内容
+    d3.select(svg).selectAll('*:not(defs)').remove()
+
+    const rect = svg.getBoundingClientRect()
+    const width = rect.width
+    const height = rect.height
+
+    // 创建图表组
+    const g = d3.select(svg).append('g')
+
+    // 处理数据
+    const nodes = knowledgeGraph.nodes.map(d => ({ ...d }))
+    const links = knowledgeGraph.edges.map(d => ({ ...d }))
+
+    // 创建力仿真
+    const simulation = d3.forceSimulation(nodes)
+      .force('link', d3.forceLink(links).id(d => d.id).distance(100))
+      .force('charge', d3.forceManyBody().strength(-300))
+      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('collision', d3.forceCollide(30))
+
+    // 绘制连线
+    const link = g.append('g')
+      .attr('class', 'links')
+      .selectAll('line')
+      .data(links)
+      .enter()
+      .append('line')
+      .attr('class', 'graph-link')
+      .attr('stroke', '#94a3b8')
+      .attr('stroke-width', d => Math.sqrt((d.weight || 0.5) * 4))
+      .attr('stroke-opacity', 0.6)
+      .attr('marker-end', 'url(#arrowhead)')
+
+    // 绘制节点
+    const node = g.append('g')
+      .attr('class', 'nodes')
+      .selectAll('g')
+      .data(nodes)
+      .enter()
+      .append('g')
+      .attr('class', 'graph-node')
+      .call(d3.drag()
+        .on('start', dragstarted)
+        .on('drag', dragged)
+        .on('end', dragended))
+
+    // 节点圆形
+    node.append('circle')
+      .attr('r', d => 8 + (d.importance || 0.5) * 12)
+      .attr('fill', (d) => {
+        const importance = d.importance || 0.5
+        if (importance > 0.7)
+          return '#f87171' // 红色 - 重要
+        if (importance > 0.4)
+          return '#facc15' // 黄色 - 一般
+        return '#9ca3af' // 灰色 - 次要
+      })
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 2)
+      .style('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))')
+
+    // 节点标签
+    node.append('text')
+      .text(d => d.label)
+      .attr('x', 0)
+      .attr('y', d => -(8 + (d.importance || 0.5) * 12) - 5)
+      .attr('text-anchor', 'middle')
+      .attr('class', 'text-xs font-medium fill-current text-gray-700 dark:text-gray-300')
+      .style('pointer-events', 'none')
+
+    // 节点交互事件
+    node
+      .on('mouseover', (event, d) => {
+        // 高亮相关连线
+        link
+          .style('stroke-opacity', l =>
+            l.source.id === d.id || l.target.id === d.id ? 1 : 0.2)
+          .style('stroke-width', l =>
+            l.source.id === d.id || l.target.id === d.id
+              ? Math.sqrt((l.weight || 0.5) * 6)
+              : Math.sqrt((l.weight || 0.5) * 4))
+
+        // 显示工具提示
+        showTooltip(event, d)
+      })
+      .on('mouseout', () => {
+        // 恢复连线样式
+        link
+          .style('stroke-opacity', 0.6)
+          .style('stroke-width', d => Math.sqrt((d.weight || 0.5) * 4))
+
+        // 隐藏工具提示
+        hideTooltip()
+      })
+
+    // 仿真更新
+    simulation.on('tick', () => {
+      link
+        .attr('x1', d => d.source.x)
+        .attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x)
+        .attr('y2', d => d.target.y)
+
+      node
+        .attr('transform', d => `translate(${d.x},${d.y})`)
+    })
+
+    // 缩放功能
+    const zoom = d3.zoom()
+      .scaleExtent([0.5, 3])
+      .on('zoom', (event) => {
+        g.attr('transform', event.transform)
+      })
+
+    d3.select(svg).call(zoom)
+
+    // 工具栏按钮事件
+    document.querySelector('.kg-zoom-in')?.addEventListener('click', () => {
+      d3.select(svg).transition().call(
+        zoom.scaleBy,
+        1.2,
+      )
+    })
+
+    document.querySelector('.kg-zoom-out')?.addEventListener('click', () => {
+      d3.select(svg).transition().call(
+        zoom.scaleBy,
+        1 / 1.2,
+      )
+    })
+
+    document.querySelector('.kg-reset')?.addEventListener('click', () => {
+      d3.select(svg).transition().call(
+        zoom.transform,
+        d3.zoomIdentity,
+      )
+      simulation.alpha(1).restart()
+    })
+
+    // 拖拽函数
+    function dragstarted(event, d) {
+      if (!event.active)
+        simulation.alphaTarget(0.3).restart()
+      d.fx = d.x
+      d.fy = d.y
+    }
+
+    function dragged(event, d) {
+      d.fx = event.x
+      d.fy = event.y
+    }
+
+    function dragended(event, d) {
+      if (!event.active)
+        simulation.alphaTarget(0)
+      d.fx = null
+      d.fy = null
+    }
+
+    // 工具提示函数
+    function showTooltip(event, d) {
+      const tooltipContent = tooltip.querySelector('.tooltip-content')
+      tooltipContent.innerHTML = `
+          <div class="font-semibold">${d.label}</div>
+          <div class="text-gray-300">类型: ${d.type}</div>
+          ${d.description ? `<div class="text-gray-300 mt-1">${d.description}</div>` : ''}
+          ${d.importance !== undefined ? `<div class="text-gray-300">重要性: ${Math.round(d.importance * 100)}%</div>` : ''}
+        `
+
+      tooltip.style.visibility = 'visible'
+      tooltip.style.left = `${event.pageX + 10}px`
+      tooltip.style.top = `${event.pageY - 10}px`
+    }
+
+    function hideTooltip() {
+      tooltip.style.visibility = 'hidden'
+    }
+  }
+})()
+</script>
+
+<style>
+  .knowledge-graph-container {
+    margin: 1.5rem 0;
+  }
+
+  .graph-link {
+    transition: all 0.3s ease;
+  }
+
+  .graph-node {
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .graph-node:hover circle {
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2)) brightness(1.1);
+  }
+
+  .graph-tooltip {
+    transition: opacity 0.2s ease;
+  }
+
+  .knowledge-graph-svg {
+    font-family: inherit;
+  }
+
+  @media (max-width: 640px) {
+    #knowledge-graph-svg {
+      height: 300px;
+    }
+
+    .toolbar-right {
+      display: none;
+    }
+  }
+</style>
