@@ -1,0 +1,52 @@
+aiknowledgegraph:
+  # 基本控制
+  enable: true # 是否启用插件，如果关闭，也可以在文章顶部的is_knowledge_graph字段单独设置是否启用，反之也可以配置是否单独禁用
+  cover_all: false # 是否覆盖已有知识图谱，默认只生成缺失的，注意开启后，可能会导致过量的api使用！
+  knowledge_graph_field: knowledge_graph # 知识图谱写入字段名，重要配置，谨慎修改！！！！！！！
+  logger: 1 # 日志等级（0=仅错误，1=生成+错误，2=全部）
+
+  # AI 接口配置
+  api: https://api.shubiaobiao.com/v1/chat/completions # OpenAI 兼容模型接口
+  token: sk-fIcTg8LqpIokZolwaVtH4Oh2serdt8Puh46D0tbNwNHbKUrs # OpenAI 或兼容模型的密钥
+  model: gemini-2.5-pro # 使用模型名称
+  prompt: >
+    请从以下文章内容中提取知识图谱，包括实体节点和它们之间的关系。
+
+    要求：
+    1. 识别文章中的关键实体（人物、概念、技术、地点、组织等）
+    2. 确定实体之间的关系
+    3. 每个实体分配重要性评分 (0-1)
+    4. 每个关系分配权重 (0-1)
+    5. 返回严格的JSON格式，不要包含任何其他文本
+
+    JSON格式如下：
+    {
+      "nodes": [
+        {
+          "id": "实体唯一ID",
+          "label": "实体名称",
+          "type": "实体类型（如：人物、技术、概念）",
+          "description": "实体描述",
+          "importance": 0.8,
+          "category": "primary"
+        }
+      ],
+      "edges": [
+        {
+          "id": "关系唯一ID",
+          "source": "源实体ID",
+          "target": "目标实体ID",
+          "type": "关系类型",
+          "label": "关系描述",
+          "weight": 0.7
+        }
+      ]
+    }
+
+  # 内容清洗设置
+  ignoreRules: # 可选：自定义内容清洗的正则规则
+    - '\{%.*?%\}'
+    - '!\[.*?\]\(.*?\)'
+
+  max_token: 5000 # 输入内容最大 token 长度（非输出限制）
+  concurrency: 5 # 并发处理数，建议不高于 5

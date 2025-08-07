@@ -10,6 +10,242 @@ pin: 99
 lang: zh
 abbrlink: theme-guide
 aicommit: 这里是Zang-AI，这篇文章介绍了基于Astro框架的Retypeset静态博客主题“重新编排”的上手指南，旨在帮助用户快速搭建个人博客。文章核心内容分为两部分：主题配置和新文章创建。主题配置方面，详细讲解了如何通过修改配置文件来自定义站点信息、主题配色、全局设置、评论系统、搜索引擎优化、页脚及资源预加载，并提及了语法高亮、文章摘要、Open Graph社交卡片和RSS订阅等其他配置。新文章创建部分，强调了核心配置项的必填性，并介绍了草稿、置顶、目录生成、语言指定、自定义文章URL等多种进阶配置。文章还介绍了通过执行优化操作来改善中日韩文与英文混排格式，补充空格并纠正标点，以优化排版。
+knowledge_graph:
+  nodes:
+    - id: retypeset
+      label: Retypeset
+      type: 技术
+      description: 一款基于 Astro 框架的静态博客主题，中文名为“重新编排”。
+      importance: 1
+      category: primary
+    - id: astro
+      label: Astro
+      type: 技术
+      description: 一个用于构建静态网站的现代前端框架，Retypeset 主题基于此框架开发。
+      importance: 0.8
+      category: secondary
+    - id: static-blog-theme
+      label: 静态博客主题
+      type: 概念
+      description: 用于构建静态博客网站的预设模板、样式和功能集合。
+      importance: 0.7
+      category: secondary
+    - id: theme-config
+      label: 主题配置
+      type: 过程
+      description: 修改配置文件以自定义博客的站点信息、配色、功能等。
+      importance: 0.9
+      category: primary
+    - id: config-file
+      label: src/config.ts
+      type: 文件
+      description: Retypeset 主题的主要配置文件，用于定义站点范围的设置。
+      importance: 0.7
+      category: secondary
+    - id: create-post
+      label: 创建新文章
+      type: 过程
+      description: 在 Retypeset 博客中添加新内容的核心流程。
+      importance: 0.9
+      category: primary
+    - id: front-matter
+      label: Front Matter
+      type: 概念
+      description: 位于 Markdown 文件顶部的元数据块，用于配置单篇文章的属性，如标题、日期、是否草稿等。
+      importance: 0.8
+      category: primary
+    - id: typesetting-optimization
+      label: 混排优化
+      type: 功能
+      description: 自动优化 Markdown 文件中 CJK（中日韩）与英文混排时的空格和标点符号。
+      importance: 0.7
+      category: secondary
+    - id: markdown
+      label: Markdown
+      type: 技术
+      description: 一种轻量级标记语言，用于撰写文章内容。
+      importance: 0.6
+      category: secondary
+    - id: fm-title
+      label: title
+      type: 配置项
+      description: Front Matter 中的文章标题，为必填项。
+      importance: 0.5
+      category: tertiary
+    - id: fm-pubdate
+      label: pubDate
+      type: 配置项
+      description: Front Matter 中的文章发布日期，为必填项。
+      importance: 0.5
+      category: tertiary
+    - id: advanced-config
+      label: 进阶配置
+      type: 概念
+      description: Front Matter 中用于文章的非必需高级配置项，如草稿、置顶、目录等。
+      importance: 0.6
+      category: secondary
+    - id: fm-draft
+      label: draft
+      type: 配置项
+      description: Front Matter 配置项，用于将文章标记为草稿，使其在生产环境中不发布。
+      importance: 0.4
+      category: tertiary
+    - id: fm-pin
+      label: pin
+      type: 配置项
+      description: Front Matter 配置项，用于置顶文章，数值越大优先级越高。
+      importance: 0.4
+      category: tertiary
+    - id: fm-toc
+      label: toc
+      type: 配置项
+      description: Front Matter 配置项，用于控制是否为单篇文章生成目录（Table of Contents）。
+      importance: 0.4
+      category: tertiary
+    - id: cjk
+      label: CJK
+      type: 概念
+      description: 中文（Chinese）、日文（Japanese）、韩文（Korean）的统称。
+      importance: 0.3
+      category: tertiary
+    - id: seo
+      label: 搜索引擎优化
+      type: 功能
+      description: 主题配置的一部分，用于提升博客在搜索引擎中的可见性。
+      importance: 0.5
+      category: secondary
+    - id: open-graph
+      label: Open Graph
+      type: 技术
+      description: 一种使网页在社交媒体上分享时能展示为丰富预览卡片的协议。
+      importance: 0.4
+      category: tertiary
+    - id: syntax-highlighting
+      label: 语法高亮
+      type: 功能
+      description: 在代码块中用不同颜色和样式显示代码，以增强可读性。
+      importance: 0.5
+      category: secondary
+  edges:
+    - id: e1
+      source: retypeset
+      target: astro
+      type: 依赖关系
+      label: 基于
+      weight: 0.9
+    - id: e2
+      source: retypeset
+      target: static-blog-theme
+      type: 分类关系
+      label: 是一种
+      weight: 0.8
+    - id: e3
+      source: retypeset
+      target: theme-config
+      type: 功能关系
+      label: 支持
+      weight: 0.9
+    - id: e4
+      source: retypeset
+      target: create-post
+      type: 功能关系
+      label: 支持
+      weight: 0.9
+    - id: e5
+      source: retypeset
+      target: typesetting-optimization
+      type: 功能关系
+      label: 提供
+      weight: 0.7
+    - id: e6
+      source: theme-config
+      target: config-file
+      type: 实现方式
+      label: 通过修改
+      weight: 1
+    - id: e7
+      source: create-post
+      target: markdown
+      type: 工具关系
+      label: 使用
+      weight: 0.8
+    - id: e8
+      source: create-post
+      target: front-matter
+      type: 概念关系
+      label: 使用
+      weight: 0.9
+    - id: e9
+      source: front-matter
+      target: fm-title
+      type: 包含关系
+      label: 需要必填项
+      weight: 0.8
+    - id: e10
+      source: front-matter
+      target: fm-pubdate
+      type: 包含关系
+      label: 需要必填项
+      weight: 0.8
+    - id: e11
+      source: front-matter
+      target: advanced-config
+      type: 包含关系
+      label: 包含
+      weight: 0.7
+    - id: e12
+      source: advanced-config
+      target: fm-draft
+      type: 组成关系
+      label: 包含选项
+      weight: 0.6
+    - id: e13
+      source: advanced-config
+      target: fm-pin
+      type: 组成关系
+      label: 包含选项
+      weight: 0.6
+    - id: e14
+      source: advanced-config
+      target: fm-toc
+      type: 组成关系
+      label: 包含选项
+      weight: 0.6
+    - id: e15
+      source: typesetting-optimization
+      target: cjk
+      type: 作用对象
+      label: 优化对象为
+      weight: 0.8
+    - id: e16
+      source: typesetting-optimization
+      target: markdown
+      type: 作用对象
+      label: 作用于
+      weight: 0.7
+    - id: e17
+      source: theme-config
+      target: seo
+      type: 包含关系
+      label: 包含
+      weight: 0.5
+    - id: e18
+      source: retypeset
+      target: open-graph
+      type: 功能关系
+      label: 支持
+      weight: 0.5
+    - id: e19
+      source: retypeset
+      target: syntax-highlighting
+      type: 功能关系
+      label: 支持
+      weight: 0.6
+  metadata:
+    extracted_at: '2025-08-07T02:20:01.135Z'
+    entity_count: 19
+    relation_count: 19
+    confidence: 0.8
 ---
 
 Retypeset 是一款基于 [Astro](https://astro.build/) 框架的静态博客主题，中文名为重新编排。本文为 Retypeset 主题上手指南，主要介绍如何修改主题配置与创建新文章，来帮助你快速搭建个人博客。
