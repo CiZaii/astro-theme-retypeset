@@ -7,6 +7,14 @@ export const ui = {
     tags: 'Schlagwörter',
     about: 'Über',
     toc: 'Inhaltsverzeichnis',
+    passwordProtection: {
+      title: 'Dieser Beitrag ist passwortgeschützt',
+      description: 'Bitte geben Sie das Passwort ein, um den Inhalt anzuzeigen.',
+      placeholder: 'Passwort eingeben...',
+      unlock: 'Entsperren',
+      error: 'Falsches Passwort. Bitte versuchen Sie es erneut.',
+      empty: 'Bitte geben Sie ein Passwort ein',
+    },
   },
   'en': {
     title: 'Retypeset',
@@ -16,6 +24,14 @@ export const ui = {
     tags: 'Tags',
     about: 'About',
     toc: 'Table of Contents',
+    passwordProtection: {
+      title: 'This post is password protected',
+      description: 'Please enter the password to view the content.',
+      placeholder: 'Enter password...',
+      unlock: 'Unlock',
+      error: 'Incorrect password. Please try again.',
+      empty: 'Please enter a password',
+    },
   },
   'es': {
     title: 'Retipografía',
@@ -25,6 +41,14 @@ export const ui = {
     tags: 'Etiquetas',
     about: 'Sobre',
     toc: 'Índice',
+    passwordProtection: {
+      title: 'Este artículo está protegido con contraseña',
+      description: 'Por favor, ingrese la contraseña para ver el contenido.',
+      placeholder: 'Ingrese contraseña...',
+      unlock: 'Desbloquear',
+      error: 'Contraseña incorrecta. Inténtalo de nuevo.',
+      empty: 'Por favor, ingrese una contraseña',
+    },
   },
   'fr': {
     title: 'Retypographie',
@@ -34,6 +58,14 @@ export const ui = {
     tags: 'Étiquettes',
     about: 'À propos',
     toc: 'Table des matières',
+    passwordProtection: {
+      title: 'Cet article est protégé par mot de passe',
+      description: 'Veuillez saisir le mot de passe pour voir le contenu.',
+      placeholder: 'Entrez le mot de passe...',
+      unlock: 'Déverrouiller',
+      error: 'Mot de passe incorrect. Veuillez réessayer.',
+      empty: 'Veuillez saisir un mot de passe',
+    },
   },
   'ja': {
     title: '再組版',
@@ -43,6 +75,14 @@ export const ui = {
     tags: 'タグ',
     about: '概要',
     toc: '目次',
+    passwordProtection: {
+      title: 'この記事はパスワード保護されています',
+      description: 'コンテンツを表示するにはパスワードを入力してください。',
+      placeholder: 'パスワードを入力...',
+      unlock: 'ロック解除',
+      error: 'パスワードが正しくありません。再度お試しください。',
+      empty: 'パスワードを入力してください',
+    },
   },
   'ko': {
     title: '재조판',
@@ -52,6 +92,14 @@ export const ui = {
     tags: '태그',
     about: '소개',
     toc: '목차',
+    passwordProtection: {
+      title: '이 게시물은 비밀번호로 보호됩니다',
+      description: '콘텐츠를 보려면 비밀번호를 입력하세요.',
+      placeholder: '비밀번호 입력...',
+      unlock: '잠금 해제',
+      error: '비밀번호가 틀렸습니다. 다시 시도해주세요.',
+      empty: '비밀번호를 입력해주세요',
+    },
   },
   'pl': {
     title: 'Przeskład',
@@ -61,6 +109,14 @@ export const ui = {
     tags: 'Tagi',
     about: 'O stronie',
     toc: 'Spis treści',
+    passwordProtection: {
+      title: 'Ten artykuł jest chroniony hasłem',
+      description: 'Proszę wprowadzić hasło, aby wyświetlić zawartość.',
+      placeholder: 'Wprowadź hasło...',
+      unlock: 'Odblokuj',
+      error: 'Nieprawidłowe hasło. Spróbuj ponownie.',
+      empty: 'Proszę wprowadzić hasło',
+    },
   },
   'pt': {
     title: 'Retipografia',
@@ -70,6 +126,14 @@ export const ui = {
     tags: 'Tags',
     about: 'Sobre',
     toc: 'Sumário',
+    passwordProtection: {
+      title: 'Este post está protegido por senha',
+      description: 'Por favor, digite a senha para ver o conteúdo.',
+      placeholder: 'Digite a senha...',
+      unlock: 'Desbloquear',
+      error: 'Senha incorreta. Tente novamente.',
+      empty: 'Por favor, digite uma senha',
+    },
   },
   'ru': {
     title: 'Переверстка',
@@ -79,6 +143,14 @@ export const ui = {
     tags: 'Теги',
     about: 'О себе',
     toc: 'Оглавление',
+    passwordProtection: {
+      title: 'Этот пост защищен паролем',
+      description: 'Пожалуйста, введите пароль для просмотра содержимого.',
+      placeholder: 'Введите пароль...',
+      unlock: 'Разблокировать',
+      error: 'Неверный пароль. Попробуйте еще раз.',
+      empty: 'Пожалуйста, введите пароль',
+    },
   },
   'zh': {
     title: 'ZangBlog',
@@ -88,6 +160,14 @@ export const ui = {
     tags: '标签',
     about: '关于',
     toc: '目录',
+    passwordProtection: {
+      title: '这篇文章受密码保护',
+      description: '请输入密码以查看内容。',
+      placeholder: '输入密码...',
+      unlock: '解锁',
+      error: '密码错误，请重试。',
+      empty: '请输入密码',
+    },
   },
   'zh-tw': {
     title: '重新編排',
@@ -97,5 +177,13 @@ export const ui = {
     tags: '標籤',
     about: '關於',
     toc: '目錄',
+    passwordProtection: {
+      title: '這篇文章受密碼保護',
+      description: '請輸入密碼以查看內容。',
+      placeholder: '輸入密碼...',
+      unlock: '解鎖',
+      error: '密碼錯誤，請重試。',
+      empty: '請輸入密碼',
+    },
   },
 }

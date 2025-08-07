@@ -25,6 +25,8 @@ const posts = defineCollection({
       { message: 'Abbrlink can only contain lowercase letters, numbers and hyphens' },
     ),
     aicommit: z.string().optional().default(''),
+    // Password protection
+    password: z.string().optional().default(''),
   }),
 })
 

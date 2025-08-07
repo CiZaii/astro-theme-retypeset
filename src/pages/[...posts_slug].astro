@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content'
 import { getCollection, render } from 'astro:content'
 import Comment from '@/components/Comment/Index.astro'
+import PasswordProtection from '@/components/PasswordProtection.astro'
 import PostDate from '@/components/PostDate.astro'
 import TagList from '@/components/TagList.astro'
 import BackButton from '@/components/Widgets/BackButton.astro'
@@ -98,6 +99,8 @@ export async function getStaticPaths() {
 const { post, lang, supportedLangs } = Astro.props
 const description = getPostDescription(post, 'meta')
 const { Content, headings, remarkPluginFrontmatter } = await render(post)
+const isPasswordProtected = post.data.password && post.data.password.trim() !== ''
+const postUniqueId = post.data.abbrlink || post.id
 ---
 
 <Layout
@@ -125,6 +128,7 @@ const { Content, headings, remarkPluginFrontmatter } = await render(post)
     <div
       id="post-date"
       class="mb-17.2 block c-primary font-time"
+      style={isPasswordProtected ? 'display: none;' : ''}
       transition:name={`time-${post.data.abbrlink || post.id}${lang ? `-${lang}` : ''}`}
       data-disable-theme-transition
     >
@@ -134,10 +138,17 @@ const { Content, headings, remarkPluginFrontmatter } = await render(post)
         minutes={remarkPluginFrontmatter.minutes}
       />
     </div>
+    <!-- Password Protection -->
+    {isPasswordProtected && (
+      <PasswordProtection
+        postId={postUniqueId}
+        correctPassword={post.data.password}
+      />
+    )}
     <!-- TOC -->
-    {post.data.toc && <TOC headings={headings} />}
+    {post.data.toc && !isPasswordProtected && <TOC headings={headings} />}
     <!-- Content -->
-    <div id="post-content">
+    <div id="post-content" style={isPasswordProtected ? 'display: none;' : ''}>
       <!-- AI Commit Typewriter Effect -->
       {post.data.aicommit && post.data.aicommit.trim() && (
         <TypewriterEffect text={post.data.aicommit} />
