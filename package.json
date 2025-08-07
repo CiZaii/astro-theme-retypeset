@@ -15,8 +15,7 @@
     "apply-lqip": "tsx scripts/apply-lqip.ts",
     "format-posts": "tsx scripts/format-posts.ts",
     "update-theme": "tsx scripts/update-theme.ts",
-    "ai-summary": "tsx scripts/ai-summary.ts",
-    "ai-knowledge-graph": "tsx scripts/ai-knowledge-graph.ts"
+    "ai-summary": "tsx scripts/ai-summary.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.3",

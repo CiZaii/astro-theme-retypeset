@@ -25,30 +25,6 @@ const posts = defineCollection({
       { message: 'Abbrlink can only contain lowercase letters, numbers and hyphens' },
     ),
     aicommit: z.string().optional().default(''),
-    knowledge_graph: z.object({
-      nodes: z.array(z.object({
-        id: z.string(),
-        label: z.string(),
-        type: z.string(),
-        description: z.string().optional(),
-        importance: z.number().min(0).max(1).optional(),
-        category: z.enum(['primary', 'secondary', 'tertiary']).optional(),
-      })),
-      edges: z.array(z.object({
-        id: z.string(),
-        source: z.string(),
-        target: z.string(),
-        type: z.string(),
-        label: z.string().optional(),
-        weight: z.number().min(0).max(1).optional(),
-      })),
-      metadata: z.object({
-        extracted_at: z.string().optional(),
-        entity_count: z.number().int().min(0).optional(),
-        relation_count: z.number().int().min(0).optional(),
-        confidence: z.number().min(0).max(1).optional(),
-      }).optional(),
-    }).optional(),
   }),
 })
 

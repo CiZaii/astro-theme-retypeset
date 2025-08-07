@@ -5,7 +5,6 @@ import Comment from '@/components/Comment/Index.astro'
 import PostDate from '@/components/PostDate.astro'
 import TagList from '@/components/TagList.astro'
 import BackButton from '@/components/Widgets/BackButton.astro'
-import KnowledgeGraph from '@/components/Widgets/KnowledgeGraph.astro'
 import TOC from '@/components/Widgets/TOC.astro'
 import TypewriterEffect from '@/components/Widgets/TypewriterEffect.astro'
 import { allLocales, defaultLocale, moreLocales } from '@/config'
@@ -144,10 +143,6 @@ const { Content, headings, remarkPluginFrontmatter } = await render(post)
         <TypewriterEffect text={post.data.aicommit} />
       )}
       <Content />
-      <!-- Knowledge Graph -->
-      {post.data.knowledge_graph && post.data.knowledge_graph.nodes && post.data.knowledge_graph.nodes.length > 0 && (
-        <KnowledgeGraph knowledgeGraph={post.data.knowledge_graph} />
-      )}
       <!-- Copyright -->
       <div id="post-copyright" />
       <!-- Tag List -->
