@@ -187,6 +187,24 @@ const { knowledgeGraph } = Astro.props
       .attr('stroke-opacity', 0.6)
       .attr('marker-end', 'url(#arrowhead)')
 
+    // 绘制关系标签 - 在连线上方
+    const linkLabel = g.append('g')
+      .attr('class', 'link-labels')
+      .selectAll('text')
+      .data(links)
+      .enter()
+      .append('text')
+      .attr('class', 'graph-link-label')
+      .attr('text-anchor', 'middle')
+      .attr('font-size', '11px')
+      .attr('font-weight', '500')
+      .attr('fill', '#374151')
+      .attr('stroke', '#ffffff')
+      .attr('stroke-width', '2')
+      .attr('paint-order', 'stroke fill')
+      .style('pointer-events', 'none')
+      .text(d => d.label || d.type || '关联')
+
     // 绘制节点
     const node = g.append('g')
       .attr('class', 'nodes')
@@ -256,6 +274,11 @@ const { knowledgeGraph } = Astro.props
         .attr('y1', d => d.source.y)
         .attr('x2', d => d.target.x)
         .attr('y2', d => d.target.y)
+
+      // 更新关系标签位置
+      linkLabel
+        .attr('x', d => (d.source.x + d.target.x) / 2)
+        .attr('y', d => (d.source.y + d.target.y) / 2 - 8)
 
       node
         .attr('transform', d => `translate(${d.x},${d.y})`)
@@ -342,6 +365,11 @@ const { knowledgeGraph } = Astro.props
 
   .graph-link {
     transition: all 0.3s ease;
+  }
+
+  .graph-link-label {
+    font-family: inherit;
+    user-select: none;
   }
 
   .graph-node {
