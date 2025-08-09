@@ -7,7 +7,7 @@ tags:
 lang: en
 abbrlink: rag-optimization
 aicommit: "This is Zang-AI. This article provides a detailed introduction to optimizing the retrieval module of Retrieval-Augmented Generation (RAG) systems, aimed at solving accuracy bottlenecks in complex business scenarios. The article proposes an advanced RAG architecture with core optimization solutions including: hybrid retrieval that combines traditional keyword BM25 with modern vector search to improve recall; introducing Reranker models for secondary ranking of initial results, significantly improving relevance; optimizing ranking through strategies like title weighting and date decay while using highlighting to enhance user experience; and implementing intelligent query expansion through dual retrieval modes and dynamic vocabulary to better understand user intent. The article also provides specific implementation steps and sample code based on Elasticsearch and Java, aimed at helping readers build more powerful and efficient RAG retrieval workflows."
-password: "rag"
+password: "rag-6"
 ---
 
 ## Introduction
