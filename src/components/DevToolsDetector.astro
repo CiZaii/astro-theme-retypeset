@@ -1,0 +1,358 @@
+---
+---
+
+<div id="devtools-warning" class="devtools-warning hidden">
+  <div class="warning-content">
+    <span>讨厌，别扒别人底裤！</span>
+  </div>
+</div>
+
+<script>
+// 防止开发者工具检测
+let isDevToolsOpen = false
+let warningElement: HTMLElement | null = null
+let lastWarningTime = 0
+const WARNING_COOLDOWN = 1000 // 5秒冷却时间
+
+function showWarning() {
+  const now = Date.now()
+  if (now - lastWarningTime < WARNING_COOLDOWN) {
+    return // 避免频繁触发
+  }
+
+  if (!warningElement) {
+    warningElement = document.getElementById('devtools-warning')
+  }
+
+  if (warningElement && !isDevToolsOpen) {
+    isDevToolsOpen = true
+    lastWarningTime = now
+    warningElement.classList.remove('hidden')
+    warningElement.classList.add('show')
+
+    // 3秒后渐变消失
+    setTimeout(() => {
+      if (warningElement) {
+        warningElement.classList.add('fade-out')
+
+        // 动画结束后隐藏元素
+        setTimeout(() => {
+          if (warningElement) {
+            warningElement.classList.remove('show', 'fade-out')
+            warningElement.classList.add('hidden')
+            isDevToolsOpen = false
+          }
+        }, 500) // 渐变动画持续时间
+      }
+    }, 3000)
+  }
+}
+
+// 方法1: 检测窗口尺寸变化（当开发者工具打开时窗口尺寸会变化）
+let windowHeight = window.innerHeight
+let windowWidth = window.innerWidth
+let isInitialLoad = true
+
+function detectDevTools() {
+  // 忽略初始加载时的尺寸变化
+  if (isInitialLoad) {
+    isInitialLoad = false
+    return
+  }
+
+  const heightRatio = window.innerHeight / windowHeight
+  const widthRatio = window.innerWidth / windowWidth
+
+  // 如果窗口尺寸显著减少，可能是开发者工具打开了
+  if (heightRatio < 0.75 || widthRatio < 0.75) {
+    showWarning()
+  }
+
+  windowHeight = window.innerHeight
+  windowWidth = window.innerWidth
+}
+
+// 方法2: 使用性能检测
+function detectDevToolsByTiming() {
+  const start = performance.now()
+  // 使用try-catch避免console相关的检测被ESLint阻止
+  try {
+    // eslint-disable-next-line no-console
+    console.clear()
+  }
+  catch {
+    // 忽略错误
+  }
+  const end = performance.now()
+
+  // 如果console.clear()执行时间异常长，可能开发者工具已打开
+  if (end - start > 1) {
+    showWarning()
+  }
+}
+
+// 方法3: 检测DevTools特有行为
+const devtools = {
+  open: false,
+  orientation: null,
+}
+
+function detectDevToolsAdvanced() {
+  const threshold = 160
+
+  if (window.outerHeight - window.innerHeight > threshold
+    || window.outerWidth - window.innerWidth > threshold) {
+    if (!devtools.open) {
+      devtools.open = true
+      showWarning()
+    }
+  }
+  else {
+    devtools.open = false
+  }
+}
+
+// 启动检测
+setTimeout(() => {
+  // 监听窗口变化
+  window.addEventListener('resize', detectDevTools)
+
+  // 定期检测
+  setInterval(detectDevToolsByTiming, 2000)
+  setInterval(detectDevToolsAdvanced, 1000)
+}, 2000) // 2秒后开始检测，避免页面加载时的干扰
+
+// 监听键盘事件（F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U）
+document.addEventListener('keydown', (e) => {
+  if (
+    e.key === 'F12'
+    || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C'))
+    || (e.ctrlKey && e.key === 'u')
+    || (e.metaKey && e.altKey && (e.key === 'i' || e.key === 'I')) // Mac快捷键
+  ) {
+    e.preventDefault()
+    showWarning()
+    return false
+  }
+})
+
+// 禁用右键菜单
+document.addEventListener('contextmenu', (e) => {
+  e.preventDefault()
+  showWarning()
+  return false
+})
+
+// 防止选择和复制（但保留代码块的选择功能）
+document.addEventListener('selectstart', (e) => {
+  const target = e.target as Element
+  if (target && !target.closest('pre, code, .selectable, input, textarea')) {
+    e.preventDefault()
+    return false
+  }
+})
+
+// 禁用拖拽
+document.addEventListener('dragstart', (e) => {
+  const target = e.target as Element
+  if (target && !target.closest('img, .draggable')) {
+    e.preventDefault()
+    return false
+  }
+})
+
+// 反调试：检测调试器断点
+function antiDebugger() {
+  try {
+    const start = performance.now()
+    // eslint-disable-next-line no-debugger
+    debugger
+    const end = performance.now()
+
+    if (end - start > 100) {
+      showWarning()
+    }
+  }
+  catch {
+    // 忽略错误
+  }
+}
+
+// 随机间隔运行反调试
+function scheduleAntiDebugger() {
+  const delay = Math.random() * 3000 + 1000 // 1-4秒随机间隔
+  setTimeout(() => {
+    antiDebugger()
+    scheduleAntiDebugger()
+  }, delay)
+}
+
+// 启动反调试（延迟启动）
+setTimeout(scheduleAntiDebugger, 3000)
+</script>
+
+<style>
+  .devtools-warning {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 9999;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8787 50%, #ee5a52 100%);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow:
+      0 8px 32px rgba(255, 107, 107, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.1);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Noto Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    transform: translateX(-100%);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+    max-width: 280px;
+    animation: pulse 2s infinite;
+  }
+
+  .devtools-warning.show {
+    transform: translateX(0);
+    animation: slideInBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .devtools-warning.fade-out {
+    opacity: 0;
+    transform: translateX(-30px) scale(0.95);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .devtools-warning.hidden {
+    display: none;
+  }
+
+  .warning-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .warning-content::before {
+    content: '🙈';
+    font-size: 20px;
+    animation: wiggle 1s ease-in-out infinite;
+  }
+
+  /* 动画效果 */
+  @keyframes slideInBounce {
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    50% {
+      transform: translateX(10px);
+    }
+    100% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow:
+        0 8px 32px rgba(255, 107, 107, 0.3),
+        0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+      box-shadow:
+        0 12px 40px rgba(255, 107, 107, 0.4),
+        0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  @keyframes wiggle {
+    0%, 100% {
+      transform: rotate(0deg);
+    }
+    25% {
+      transform: rotate(-10deg) scale(1.1);
+    }
+    75% {
+      transform: rotate(10deg) scale(1.1);
+    }
+  }
+
+  /* 响应式设计 */
+  @media (max-width: 480px) {
+    .devtools-warning {
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      max-width: none;
+      padding: 14px 18px;
+      font-size: 14px;
+    }
+  }
+
+  /* 深色模式适配 */
+  @media (prefers-color-scheme: dark) {
+    .devtools-warning {
+      background: linear-gradient(135deg, #ff4757 0%, #ff6b7a 50%, #c44569 100%);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  /* 反调试措施 - 限制用户选择 */
+  body {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 允许代码块、输入框和某些特殊元素可以选择 */
+  pre,
+  code,
+  .selectable,
+  input,
+  textarea,
+  [contenteditable="true"] {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+  }
+
+  /* 为博客文章内容添加可选择性 */
+  article,
+  .post-content,
+  .content,
+  .markdown-body {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+  }
+
+  /* 图片保护 */
+  img {
+    -webkit-user-drag: none;
+    -moz-user-drag: none;
+    -ms-user-drag: none;
+    user-drag: none;
+    pointer-events: none;
+  }
+
+  /* 允许可拖拽元素正常工作 */
+  .draggable img,
+  .image-zoom img {
+    pointer-events: auto;
+    -webkit-user-drag: auto;
+    -moz-user-drag: auto;
+    -ms-user-drag: auto;
+    user-drag: auto;
+  }
+</style>
