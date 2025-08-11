@@ -85,7 +85,7 @@ public void batchClearMessages(
     @Payload List<OrderMessage> messages,
     @Header(AmqpHeaders.DELIVERY_TAG) List<Long> deliveryTags,
     Channel channel) throws IOException {
-    
+
     // Batch acknowledge without processing
     for (Long deliveryTag : deliveryTags) {
         channel.basicAck(deliveryTag, false);
@@ -140,7 +140,7 @@ public void processBufferedMessages() {
 ```java
 @Configuration
 public class RabbitMQConfig {
-    
+
     @Bean
     public Queue orderQueue() {
         return QueueBuilder.durable("order.queue")
@@ -149,12 +149,12 @@ public class RabbitMQConfig {
             .deadLetterRoutingKey("order.dlq")
             .build();
     }
-    
+
     @Bean
     public Queue deadLetterQueue() {
         return QueueBuilder.durable("order.dlq").build();
     }
-    
+
     @Bean
     public DirectExchange deadLetterExchange() {
         return new DirectExchange("order.dlx");
@@ -192,15 +192,15 @@ public void processExpiredMessages(OrderMessage message) {
 ```java
 @Component
 public class QueueMonitor {
-    
+
     @Value("${rabbitmq.queue.threshold:1000}")
     private int alertThreshold;
-    
+
     @Scheduled(fixedDelay = 30000)
     public void checkQueueDepth() {
         int messageCount = rabbitAdmin.getQueueProperties("order.queue")
             .getMessageCount();
-            
+
         if (messageCount > alertThreshold) {
             alertService.sendAlert("Queue depth exceeded threshold: " + messageCount);
         }
@@ -213,11 +213,11 @@ public class QueueMonitor {
 ```java
 @Component
 public class DynamicConsumerManager {
-    
+
     public void scaleConsumers(String queueName, int targetConsumerCount) {
-        SimpleMessageListenerContainer container = 
+        SimpleMessageListenerContainer container =
             (SimpleMessageListenerContainer) registry.getListenerContainer(queueName);
-            
+
         container.setConcurrentConsumers(targetConsumerCount);
         container.setMaxConcurrentConsumers(targetConsumerCount * 2);
     }
@@ -229,9 +229,9 @@ public class DynamicConsumerManager {
 ```java
 @Component
 public class MessageProcessor {
-    
+
     private final CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("messageProcessor");
-    
+
     public void processMessage(OrderMessage message) {
         circuitBreaker.executeSupplier(() -> {
             return orderService.processOrder(message);
@@ -245,7 +245,7 @@ public class MessageProcessor {
 ### 1. Capacity Planning
 
 - Monitor historical traffic patterns
-- Set up proper consumer scaling policies  
+- Set up proper consumer scaling policies
 - Implement load testing for peak scenarios
 
 ### 2. Performance Optimization

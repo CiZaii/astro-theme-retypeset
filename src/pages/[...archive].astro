@@ -1,0 +1,125 @@
+---
+import TimelineList from '@/components/TimelineList.astro'
+import { defaultLocale, moreLocales } from '@/config'
+import { ui } from '@/i18n/ui'
+import Layout from '@/layouts/Layout.astro'
+import { getPostsByYear } from '@/utils/content'
+
+export async function getStaticPaths() {
+  type PathItem = {
+    params: { archive: string | undefined }
+    props: { lang: string }
+  }
+
+  const paths: PathItem[] = []
+
+  // Default locale
+  paths.push({
+    params: { archive: 'archive/' },
+    props: { lang: defaultLocale },
+  })
+
+  // More locales
+  moreLocales.forEach((lang: string) => {
+    paths.push({
+      params: { archive: `${lang}/archive/` },
+      props: { lang },
+    })
+  })
+
+  return paths
+}
+
+const { lang } = Astro.props
+
+const postsByYear = await getPostsByYear(lang)
+const currentUI = ui[lang as keyof typeof ui] ?? {}
+const pageTitle = currentUI.archive || 'Archive'
+
+const totalPosts = [...postsByYear.values()].flat().length
+const yearsCount = postsByYear.size
+
+// Multilingual descriptions
+function getDescription() {
+  if (totalPosts === 0) {
+    switch (lang) {
+      case 'en':
+        return 'No articles yet'
+      case 'zh':
+        return '暂无文章'
+      case 'zh-tw':
+        return '暫無文章'
+      case 'ja':
+        return '記事がまだありません'
+      case 'ko':
+        return '아직 게시물이 없습니다'
+      case 'de':
+        return 'Noch keine Artikel'
+      case 'fr':
+        return 'Aucun article pour le moment'
+      case 'es':
+        return 'Aún no hay artículos'
+      case 'pt':
+        return 'Ainda não há artigos'
+      case 'ru':
+        return 'Пока нет статей'
+      case 'pl':
+        return 'Jeszcze brak artykułów'
+      default:
+        return 'No articles yet'
+    }
+  }
+
+  switch (lang) {
+    case 'en':
+      return `${totalPosts} articles across ${yearsCount} years`
+    case 'zh':
+      return `共 ${totalPosts} 篇文章，跨越 ${yearsCount} 年时光`
+    case 'zh-tw':
+      return `共 ${totalPosts} 篇文章，跨越 ${yearsCount} 年時光`
+    case 'ja':
+      return `${yearsCount}年間で${totalPosts}記事`
+    case 'ko':
+      return `${yearsCount}년 동안 ${totalPosts}개의 게시물`
+    case 'de':
+      return `${totalPosts} Artikel über ${yearsCount} Jahre`
+    case 'fr':
+      return `${totalPosts} articles sur ${yearsCount} années`
+    case 'es':
+      return `${totalPosts} artículos a lo largo de ${yearsCount} años`
+    case 'pt':
+      return `${totalPosts} artigos ao longo de ${yearsCount} anos`
+    case 'ru':
+      return `${totalPosts} статей за ${yearsCount} лет`
+    case 'pl':
+      return `${totalPosts} artykułów przez ${yearsCount} lat`
+    default:
+      return `${totalPosts} articles across ${yearsCount} years`
+  }
+}
+---
+
+<Layout>
+  {/* Page header */}
+  <div class="mb-10">
+    <div class="uno-decorative-line" />
+    <h1 class="mb-4 text-5.5 c-primary font-bold font-title lg:text-7">
+      {pageTitle}
+    </h1>
+    <p class="text-4 c-secondary/75 leading-relaxed lg:text-4.25">
+      {getDescription()}
+    </p>
+  </div>
+
+  {/* Timeline content */}
+  {postsByYear.size > 0
+? (
+    <TimelineList postsByYear={postsByYear} lang={lang} />
+  )
+: (
+    <div class="py-16 text-center">
+      <p class="text-4 c-secondary/60">{getDescription()}</p>
+    </div>
+  )}
+</Layout>
+

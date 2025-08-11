@@ -1,0 +1,123 @@
+---
+import type { FriendLink } from '@/data/friends'
+
+export interface Props {
+  friends: FriendLink[]
+}
+
+const { friends } = Astro.props
+
+function getDefaultAvatar(name: string) {
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&color=fff&size=80&rounded=true`
+}
+---
+
+<div class="friends-grid grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+  {friends.map(friend => (
+    <article class="friend-card group">
+      <a
+        href={friend.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="friend-link block h-full border border-secondary/10 rounded-2xl bg-background p-6 transition-all duration-300 hover:border-secondary/25 hover:shadow-lg hover:shadow-secondary/5"
+      >
+        {/* Avatar and Name */}
+        <div class="friend-header mb-4 flex items-center gap-4">
+          <div class="friend-avatar h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-secondary/10">
+            <img
+              src={friend.avatar || getDefaultAvatar(friend.name)}
+              alt={friend.name}
+              class="h-full w-full object-cover transition-transform group-hover:scale-110"
+              loading="lazy"
+              onerror={`this.src='${getDefaultAvatar(friend.name)}'`}
+            />
+          </div>
+          <div class="friend-info min-w-0 flex-1">
+            <h3 class="friend-name truncate text-4.25 c-primary font-bold leading-relaxed font-title lg:text-4.5">
+              {friend.name}
+            </h3>
+          </div>
+        </div>
+
+        {/* Description */}
+        <p class="friend-description line-clamp-2 mb-4 text-3.5 c-secondary/80 leading-relaxed lg:text-3.75">
+          {friend.description}
+        </p>
+
+        {/* Tags */}
+        {friend.tags && friend.tags.length > 0 && (
+          <div class="friend-tags flex flex-wrap gap-2">
+            {friend.tags.slice(0, 3).map(tag => (
+              <span class="tag rounded-full bg-secondary/8 px-2.5 py-1 text-2.75 c-secondary/70 font-medium transition-colors group-hover:bg-secondary/12">
+                {tag}
+              </span>
+            ))}
+            {friend.tags.length > 3 && (
+              <span class="tag rounded-full bg-secondary/8 px-2.5 py-1 text-2.75 c-secondary/50 font-medium">
+                +{friend.tags.length - 3}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Hover indicator */}
+        <div class="friend-indicator absolute bottom-4 right-4 opacity-0 transition-opacity group-hover:opacity-100">
+          <div class="h-2 w-2 rounded-full bg-primary"></div>
+        </div>
+      </a>
+    </article>
+  ))}
+</div>
+
+<style>
+  .friend-card {
+    position: relative;
+  }
+
+  .friend-link {
+    transform: translateY(0);
+  }
+
+  .friend-card:hover .friend-link {
+    transform: translateY(-2px);
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .friend-avatar img {
+    transition: all 0.3s ease;
+  }
+
+  .friend-card:hover .friend-avatar img {
+    filter: saturate(1.2) brightness(1.1);
+  }
+
+  /* Responsive grid adjustments */
+  @media (max-width: 640px) {
+    .friends-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .friend-link {
+      padding: 1.25rem;
+    }
+
+    .friend-avatar {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    .friends-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>
+

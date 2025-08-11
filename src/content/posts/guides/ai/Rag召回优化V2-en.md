@@ -105,10 +105,10 @@ Response (Excerpt):
   "success": true,
   "data": [
     {
-      "title+outline+content": [ { "score": 0.8789253, "id": "2149793922940857", "content": "..." } ],
-      "content": [ { "score": 0.866995, "id": "21497939229408532", "content": "..." } ],
-      "interferenceCalculation": [ { "interferenceRatio": 1.0090, "fullContentScore": 0.87149847 } ],
-      "finalTop5": [ { "score": 0.86370814, "id": "21497939229408515" } ]
+      "title+outline+content": [{ "score": 0.8789253, "id": "2149793922940857", "content": "..." }],
+      "content": [{ "score": 0.866995, "id": "21497939229408532", "content": "..." }],
+      "interferenceCalculation": [{ "interferenceRatio": 1.0090, "fullContentScore": 0.87149847 }],
+      "finalTop5": [{ "score": 0.86370814, "id": "21497939229408515" }]
     }
   ]
 }

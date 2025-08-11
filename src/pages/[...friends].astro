@@ -1,0 +1,122 @@
+---
+import FriendsGrid from '@/components/FriendsGrid.astro'
+import { defaultLocale, moreLocales } from '@/config'
+import { friendsData } from '@/data/friends'
+import { ui } from '@/i18n/ui'
+import Layout from '@/layouts/Layout.astro'
+
+export async function getStaticPaths() {
+  type PathItem = {
+    params: { friends: string | undefined }
+    props: { lang: string }
+  }
+
+  const paths: PathItem[] = []
+
+  // Default locale
+  paths.push({
+    params: { friends: 'friends/' },
+    props: { lang: defaultLocale },
+  })
+
+  // More locales
+  moreLocales.forEach((lang: string) => {
+    paths.push({
+      params: { friends: `${lang}/friends/` },
+      props: { lang },
+    })
+  })
+
+  return paths
+}
+
+const { lang } = Astro.props
+
+const currentUI = ui[lang as keyof typeof ui] ?? {}
+const pageTitle = currentUI.friends || 'Friends'
+
+const totalFriends = friendsData.length
+
+// Multilingual descriptions
+function getDescription() {
+  if (totalFriends === 0) {
+    switch (lang) {
+      case 'en':
+        return 'No friends yet'
+      case 'zh':
+        return '暂无友链'
+      case 'zh-tw':
+        return '暫無友鏈'
+      case 'ja':
+        return 'まだ友達がいません'
+      case 'ko':
+        return '아직 친구들이 없습니다'
+      case 'de':
+        return 'Noch keine Freunde'
+      case 'fr':
+        return 'Pas encore d\'amis'
+      case 'es':
+        return 'Aún no hay amigos'
+      case 'pt':
+        return 'Ainda não há amigos'
+      case 'ru':
+        return 'Пока нет друзей'
+      case 'pl':
+        return 'Jeszcze brak przyjaciół'
+      default:
+        return 'No friends yet'
+    }
+  }
+
+  switch (lang) {
+    case 'en':
+      return `${totalFriends} friends and partners`
+    case 'zh':
+      return `共收录 ${totalFriends} 个友情链接`
+    case 'zh-tw':
+      return `共收錄 ${totalFriends} 個友情連結`
+    case 'ja':
+      return `${totalFriends}人の友達とパートナー`
+    case 'ko':
+      return `${totalFriends}명의 친구들과 파트너`
+    case 'de':
+      return `${totalFriends} Freunde und Partner`
+    case 'fr':
+      return `${totalFriends} amis et partenaires`
+    case 'es':
+      return `${totalFriends} amigos y socios`
+    case 'pt':
+      return `${totalFriends} amigos e parceiros`
+    case 'ru':
+      return `${totalFriends} друзей и партнеров`
+    case 'pl':
+      return `${totalFriends} przyjaciół i partnerów`
+    default:
+      return `${totalFriends} friends and partners`
+  }
+}
+---
+
+<Layout>
+  {/* Page header */}
+  <div class="mb-10">
+    <div class="uno-decorative-line" />
+    <h1 class="mb-4 text-5.5 c-primary font-bold font-title lg:text-7">
+      {pageTitle}
+    </h1>
+    <p class="text-4 c-secondary/75 leading-relaxed lg:text-4.25">
+      {getDescription()}
+    </p>
+  </div>
+
+  {/* Friends content */}
+  {friendsData.length > 0
+    ? (
+      <FriendsGrid friends={friendsData} />
+    )
+    : (
+      <div class="py-16 text-center">
+        <p class="text-4 c-secondary/60">{getDescription()}</p>
+      </div>
+    )}
+</Layout>

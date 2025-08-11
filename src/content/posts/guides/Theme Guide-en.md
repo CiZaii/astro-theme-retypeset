@@ -22,7 +22,7 @@ Customize your blog by modifying the configuration file [src/config.ts](https://
 
 Configure basic site information including title, subtitle, description, author, and URL.
 
-### Color Settings  
+### Color Settings
 
 Set light and dark theme colors using OKLCH color values for consistent theming across the site.
 
@@ -38,7 +38,7 @@ Enable and configure comment systems including Giscus, Twikoo, and Waline with l
 
 Set up search engine optimization including social media verification, analytics, and Open Graph settings.
 
-### Footer Settings  
+### Footer Settings
 
 Configure social links and website start year for the footer section.
 
@@ -58,7 +58,7 @@ Use the `pnpm new-post "Article Title"` command to create a new article with pro
 ### Optional Frontmatter
 
 - `description`: Article description
-- `updated`: Last updated date  
+- `updated`: Last updated date
 - `tags`: Article tags array
 - `draft`: Draft status (boolean)
 - `pin`: Pin priority (0-99)

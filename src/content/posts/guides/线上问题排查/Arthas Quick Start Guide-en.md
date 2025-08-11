@@ -128,7 +128,7 @@ Simply enter the number to attach to the target process.
 ```bash
 [arthas@35542]$ watch com.example.UserService getUserById '{params, returnObj, throwExp}' -x 2 -b -s -e
 # -b: before method execution
-# -s: after successful execution  
+# -s: after successful execution
 # -e: after exception thrown
 ```
 
@@ -292,7 +292,7 @@ java -jar arthas-boot.jar --target-ip 127.0.0.1 --http-port 8563 --telnet-port 3
 # Exit Arthas
 [arthas@35542]$ quit
 
-# Stop Arthas completely  
+# Stop Arthas completely
 [arthas@35542]$ stop
 ```
 
@@ -337,7 +337,7 @@ java -jar arthas-boot.jar --target-ip 127.0.0.1 --http-port 8563 --telnet-port 3
 # Filter by execution time
 [arthas@35542]$ trace com.example.UserService * '#cost > 100'
 
-# Filter by parameter values  
+# Filter by parameter values
 [arthas@35542]$ watch com.example.UserService getUserById 'params[0] > 1000'
 ```
 
@@ -361,12 +361,12 @@ Arthas is a powerful Java diagnostic tool that can help developers:
 
 - **Quickly locate** high CPU and performance issues
 - **Real-time monitor** method execution without code changes
-- **Analyze** class loading and memory issues  
+- **Analyze** class loading and memory issues
 - **Hot replace** code for rapid debugging
 
 **Key Points**:
 - ✅ Zero intrusion, no need to restart applications
-- ✅ Rich command set covering various diagnostic scenarios  
+- ✅ Rich command set covering various diagnostic scenarios
 - ✅ Simple to use with Tab completion support
 - ⚠️ Use cautiously in production, pay attention to performance impact
 

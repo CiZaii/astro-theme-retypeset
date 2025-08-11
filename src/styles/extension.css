@@ -50,6 +50,58 @@
   --at-apply: 'ml-0.5 mr-4';
 }
 
+/* Gitee Card - reuse GitHub styles with gtc prefix */
+.gtc-container {
+  --at-apply: 'my-6 block overflow-x-auto uno-round-border bg-secondary/5 px-5 py-4 transition-colors ease-out hover:(bg-secondary/10 c-primary) lg:(px-6 py-5)';
+  scrollbar-width: thin;
+  scrollbar-color: oklch(var(--un-preset-theme-colors-secondary) / 0.15) transparent;
+}
+:is(h1, h2, h3, h4, h5, h6, .gtc-container) + .gtc-container {
+  --at-apply: 'mt-4';
+}
+.gtc-container:has(+ .gtc-container) {
+  --at-apply: 'mb-4';
+}
+
+/* Gitee Title Bar */
+.gtc-title-bar {
+  --at-apply: 'flex items-center gap-2.5 lg:gap-3';
+}
+.gtc-owner-avatar {
+  --at-apply: 'aspect-square w-5.5 flex-shrink-0 rounded-full bg-secondary/20';
+}
+.gtc-repo-title {
+  --at-apply: 'flex items-center leading-normal lg:text-lg';
+}
+.gtc-slash {
+  --at-apply: 'mx-1 op-40 lg:mx-1.2';
+}
+.gtc-gitee-icon {
+  --at-apply: 'ml-auto w-5.5 flex-shrink-0 lg:w-6';
+}
+
+/* Gitee Repo Description */
+.gtc-repo-description.gtc-repo-description {
+  --at-apply: 'mb-3.5 mt-2.45 text-start text-sm lg:(mb-4 mt-2.8 text-base)';
+}
+
+/* Gitee Info Bar */
+.gtc-info-bar {
+  --at-apply: 'flex items-center gap-1.75 text-xs lg:(gap-2 text-sm)';
+}
+.gtc-info-icon {
+  --at-apply: 'flex-shrink-0';
+}
+.gtc-stars-count {
+  --at-apply: 'mr-3 lg:mr-4';
+}
+.gtc-forks-count {
+  --at-apply: 'mr-3.75 lg:mr-5';
+}
+.gtc-language-info {
+  --at-apply: 'ml-0.5 mr-4';
+}
+
 /* Admonition >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> */
 .admonition-title {
   --at-apply: 'mb-4 flex items-center font-semibold';

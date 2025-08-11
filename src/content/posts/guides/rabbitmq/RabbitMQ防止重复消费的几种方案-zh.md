@@ -13,7 +13,6 @@ aicommit: >-
   Bitmap分区及偏移量，从而解决了传统Bitmap的ID类型和连续性要求，实现了分布式环境下的高效消息去重管理。
 ---
 
-
 # RabbitMQ防止重复消费的几种方案
 
 深入分析RabbitMQ消息去重的多种技术方案，包括Bitmap、布隆过滤器、分区设计等，提供完整的实现思路和性能对比
@@ -284,7 +283,7 @@ boolean exists = bitmap[5]; // O(1)查询
 
 ##### 稀疏/非整数ID问题
 
-- 如果ID是10001, 20002, 30003...  
+- 如果ID是10001, 20002, 30003...
   需要创建长度至少为30003+1的bitmap，浪费大量空间
 - 字符串ID或UUID无法直接映射到数组位置
 
@@ -335,13 +334,13 @@ public static String[] convertBizPkToBitmap(String keyPrefix, long bizPk) {
 
 #### 工作流程
 
-1. 哈希计算  
+1. 哈希计算
    使用CRC32算法将业务ID转换为32位哈希值，支持任意类型的ID，保证分布均匀。
-2. 分区划分  
+2. 分区划分
    取哈希值的高10位作为分区号，确保IDs均匀分布，避免热点分区。
-3. 偏移计算  
+3. 偏移计算
    取哈希值的低22位作为偏移量，确定ID在分区内的具体位置。
-4. 结果返回  
+4. 结果返回
    返回含有Redis键名和位偏移量的数组，键名由前缀和分区号组成，可直接用于Redis操作。
 
 ### 方案优势分析
@@ -355,8 +354,8 @@ public static String[] convertBizPkToBitmap(String keyPrefix, long bizPk) {
 
 #### 处理任意ID
 
-- 通过哈希转换，可处理任何类型的业务ID  
-- 支持字符串、UUID等复杂ID格式  
+- 通过哈希转换，可处理任何类型的业务ID
+- 支持字符串、UUID等复杂ID格式
 
 ```java
 convertBizPkToBitmap("prefix:", 12345L);           // 数字ID

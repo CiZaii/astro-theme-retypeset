@@ -34,7 +34,7 @@ In distributed systems, duplicate message consumption in message queues is a com
 ### Business Impact
 
 - **Financial Systems**: Duplicate payments or transactions
-- **Inventory Management**: Incorrect stock calculations  
+- **Inventory Management**: Incorrect stock calculations
 - **User Experience**: Duplicate notifications or operations
 - **Data Consistency**: Inconsistent system state
 
@@ -49,30 +49,30 @@ Bitmap uses bit arrays to track processed message IDs efficiently, ideal for con
 ```java
 @Component
 public class BitmapDeduplicationService {
-    
+
     private final RedisTemplate<String, String> redisTemplate;
     private static final String BITMAP_KEY_PREFIX = "msg_dedup_bitmap:";
-    
+
     public boolean isDuplicate(long messageId, int windowSize) {
         String key = BITMAP_KEY_PREFIX + getCurrentWindow();
-        
+
         // Check if message ID already exists
         Boolean exists = redisTemplate.opsForValue()
             .getBit(key, messageId % windowSize);
-            
+
         if (Boolean.TRUE.equals(exists)) {
             return true; // Duplicate detected
         }
-        
+
         // Mark message as processed
         redisTemplate.opsForValue().setBit(key, messageId % windowSize, true);
-        
+
         // Set expiration for cleanup
         redisTemplate.expire(key, Duration.ofHours(24));
-        
+
         return false;
     }
-    
+
     private String getCurrentWindow() {
         return String.valueOf(System.currentTimeMillis() / (1000 * 60 * 60)); // Hourly windows
     }
@@ -109,10 +109,10 @@ Bloom filters provide probabilistic deduplication with controllable false positi
 ```java
 @Component
 public class BloomFilterDeduplicationService {
-    
+
     private final BloomFilter<String> bloomFilter;
     private final Set<String> confirmedIds; // For handling false positives
-    
+
     @PostConstruct
     public void init() {
         this.bloomFilter = BloomFilter.create(
@@ -122,7 +122,7 @@ public class BloomFilterDeduplicationService {
         );
         this.confirmedIds = Collections.synchronizedSet(new HashSet<>());
     }
-    
+
     public boolean isDuplicate(String messageId) {
         // First check bloom filter
         if (!bloomFilter.mightContain(messageId)) {
@@ -130,16 +130,16 @@ public class BloomFilterDeduplicationService {
             bloomFilter.put(messageId);
             return false;
         }
-        
+
         // Potential duplicate - check confirmed set
         if (confirmedIds.contains(messageId)) {
             return true; // Confirmed duplicate
         }
-        
+
         // Add to both structures
         bloomFilter.put(messageId);
         confirmedIds.add(messageId);
-        
+
         return false;
     }
 }
@@ -150,14 +150,14 @@ public class BloomFilterDeduplicationService {
 ```java
 @Component
 public class RedisBloomFilterService {
-    
+
     private final RedisTemplate<String, String> redisTemplate;
     private static final String BLOOM_FILTER_KEY = "msg_dedup_bloom";
-    
+
     public boolean isDuplicate(String messageId) {
         // Use multiple hash functions
         int[] hashes = getHashValues(messageId, 3);
-        
+
         // Check if all bits are set
         for (int hash : hashes) {
             if (!redisTemplate.opsForValue().getBit(BLOOM_FILTER_KEY, Math.abs(hash))) {
@@ -166,16 +166,16 @@ public class RedisBloomFilterService {
                 return false;
             }
         }
-        
+
         // Might be a duplicate - need additional verification
         return handlePotentialDuplicate(messageId);
     }
-    
+
     private int[] getHashValues(String messageId, int numHashes) {
         int[] hashes = new int[numHashes];
         int hash1 = messageId.hashCode();
         int hash2 = hash1 >>> 16;
-        
+
         for (int i = 0; i < numHashes; i++) {
             hashes[i] = hash1 + i * hash2;
         }
@@ -186,7 +186,7 @@ public class RedisBloomFilterService {
 
 ### Performance Characteristics
 
-| Expected Items | False Positive Rate | Memory Usage | 
+| Expected Items | False Positive Rate | Memory Usage |
 |----------------|-------------------|--------------|
 | 1M items | 1% | 1.2 MB |
 | 1M items | 0.1% | 1.9 MB |
@@ -199,20 +199,20 @@ public class RedisBloomFilterService {
 ```java
 @Component
 public class TimeWindowDeduplicationService {
-    
+
     private final Map<String, Set<String>> timeWindows;
     private final long windowSizeMs;
     private final int maxWindows;
-    
+
     public TimeWindowDeduplicationService() {
         this.timeWindows = new ConcurrentHashMap<>();
         this.windowSizeMs = 60000; // 1 minute windows
         this.maxWindows = 60; // Keep 1 hour of history
     }
-    
+
     public boolean isDuplicate(String messageId) {
         String currentWindow = getCurrentWindowKey();
-        
+
         // Check current and recent windows
         for (String windowKey : getRecentWindows()) {
             Set<String> windowMessages = timeWindows.get(windowKey);
@@ -220,17 +220,17 @@ public class TimeWindowDeduplicationService {
                 return true; // Duplicate found
             }
         }
-        
+
         // Add to current window
         timeWindows.computeIfAbsent(currentWindow, k -> ConcurrentHashMap.newKeySet())
                   .add(messageId);
-        
+
         // Cleanup old windows
         cleanupOldWindows();
-        
+
         return false;
     }
-    
+
     private void cleanupOldWindows() {
         long currentTime = System.currentTimeMillis();
         timeWindows.entrySet().removeIf(entry -> {
@@ -252,40 +252,40 @@ Solve Bitmap limitations by using hash-based partitioning to handle arbitrary ID
 ```java
 @Component
 public class PartitionedBitmapService {
-    
+
     private final RedisTemplate<String, String> redisTemplate;
     private static final String PARTITION_PREFIX = "msg_dedup_partition:";
     private static final int PARTITION_COUNT = 1000;
     private static final int PARTITION_SIZE = 1000000; // 1M bits per partition
-    
+
     public boolean isDuplicate(String messageId) {
         // Hash message ID to determine partition
         int partitionId = getPartitionId(messageId);
         long bitOffset = getBitOffset(messageId);
-        
+
         String partitionKey = PARTITION_PREFIX + partitionId;
-        
+
         // Check if bit is already set
         Boolean exists = redisTemplate.opsForValue()
             .getBit(partitionKey, bitOffset);
-            
+
         if (Boolean.TRUE.equals(exists)) {
             return true; // Duplicate detected
         }
-        
+
         // Set bit to mark as processed
         redisTemplate.opsForValue().setBit(partitionKey, bitOffset, true);
-        
+
         // Set expiration for automatic cleanup
         redisTemplate.expire(partitionKey, Duration.ofDays(1));
-        
+
         return false;
     }
-    
+
     private int getPartitionId(String messageId) {
         return Math.abs(messageId.hashCode()) % PARTITION_COUNT;
     }
-    
+
     private long getBitOffset(String messageId) {
         // Use secondary hash for bit position
         return Math.abs(messageId.hashCode() * 31) % PARTITION_SIZE;
@@ -298,32 +298,32 @@ public class PartitionedBitmapService {
 ```java
 @Component
 public class CollisionAwarePartitionedBitmap {
-    
+
     public boolean isDuplicateWithCollisionHandling(String messageId) {
         int partitionId = getPartitionId(messageId);
         long bitOffset = getBitOffset(messageId);
-        
+
         String partitionKey = PARTITION_PREFIX + partitionId;
         String collisionKey = partitionKey + ":collision";
-        
+
         // Check primary bitmap
         Boolean exists = redisTemplate.opsForValue()
             .getBit(partitionKey, bitOffset);
-            
+
         if (Boolean.FALSE.equals(exists)) {
             // Definitely not a duplicate
             redisTemplate.opsForValue().setBit(partitionKey, bitOffset, true);
             return false;
         }
-        
+
         // Potential collision - check collision set
         Boolean isConfirmedDuplicate = redisTemplate.opsForSet()
             .isMember(collisionKey, messageId);
-            
+
         if (Boolean.TRUE.equals(isConfirmedDuplicate)) {
             return true; // Confirmed duplicate
         }
-        
+
         // Add to collision set to prevent future false positives
         redisTemplate.opsForSet().add(collisionKey, messageId);
         return false;
@@ -347,18 +347,18 @@ public class CollisionAwarePartitionedBitmap {
 ```java
 @Component
 public class HybridDeduplicationService {
-    
+
     private final BloomFilterDeduplicationService bloomFilter;
     private final PartitionedBitmapService bitmap;
     private final RedisTemplate<String, String> redisTemplate;
-    
+
     public boolean isDuplicate(String messageId) {
         // First level: Bloom filter (fast negative check)
         if (!bloomFilter.mightContain(messageId)) {
             bloomFilter.put(messageId);
             return false;
         }
-        
+
         // Second level: Partitioned bitmap (precise check)
         return bitmap.isDuplicate(messageId);
     }
@@ -386,15 +386,15 @@ deduplication:
 ```java
 @Component
 public class DeduplicationMetrics {
-    
+
     private final MeterRegistry meterRegistry;
     private final Counter duplicateCounter;
     private final Timer deduplicationTimer;
-    
+
     public void recordDuplicateDetected(String strategy) {
         duplicateCounter.increment(Tags.of("strategy", strategy));
     }
-    
+
     public void recordDeduplicationTime(String strategy, Duration duration) {
         Timer.Sample.start(meterRegistry)
              .stop(Timer.builder("deduplication.time")
@@ -421,7 +421,7 @@ public class DeduplicationMetrics {
 public void cleanupExpiredData() {
     String pattern = BITMAP_KEY_PREFIX + "*";
     Set<String> keys = redisTemplate.keys(pattern);
-    
+
     for (String key : keys) {
         Long ttl = redisTemplate.getExpire(key);
         if (ttl != null && ttl < 0) {
@@ -437,7 +437,7 @@ public void cleanupExpiredData() {
 public boolean isDuplicateWithRetry(String messageId) {
     int maxRetries = 3;
     int retryCount = 0;
-    
+
     while (retryCount < maxRetries) {
         try {
             return isDuplicate(messageId);
@@ -463,7 +463,7 @@ public boolean isDuplicateWithRetry(String messageId) {
 
 **Recommended Approach for Most Scenarios**:
 1. **Start with Bloom Filter** for initial implementation
-2. **Add Partitioned Bitmap** for high-precision requirements  
+2. **Add Partitioned Bitmap** for high-precision requirements
 3. **Implement Hybrid Strategy** for optimal performance
 4. **Monitor and adjust** based on actual traffic patterns
 

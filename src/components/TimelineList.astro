@@ -1,0 +1,143 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import PostDate from '@/components/PostDate.astro'
+import { defaultLocale } from '@/config'
+
+type Post = CollectionEntry<'posts'> & {
+  remarkPluginFrontmatter: {
+    minutes: number
+  }
+}
+
+export interface Props {
+  postsByYear: Map<number, Post[]>
+  lang: string
+}
+
+const { postsByYear, lang } = Astro.props
+
+function getPostPath(post: Post) {
+  const slug = post.data.abbrlink || post.id
+
+  if (lang === defaultLocale) {
+    return `/posts/${slug}/`
+  }
+
+  return `/${lang}/posts/${slug}/`
+}
+---
+
+<div class="timeline-container">
+  {[...postsByYear.entries()]
+    .sort(([yearA], [yearB]) => yearB - yearA)
+    .map(([year, posts]) => (
+      <section class="timeline-year-section mb-12">
+        <div class="timeline-year">
+          <h2 class="year-title mb-6 text-5 c-primary font-bold font-time lg:text-6">
+            {year}
+          </h2>
+        </div>
+
+        <div class="timeline-posts">
+          {posts
+            .sort((a, b) => new Date(b.data.published).getTime() - new Date(a.data.published).getTime())
+            .map((post, _index) => (
+              <article class="timeline-item relative">
+                {/* Timeline line and dot */}
+                <div class="timeline-line absolute left-0 top-0 h-full w-0.25 bg-secondary/15 lg:left-2"></div>
+                <div class="timeline-dot absolute left--0.375 top-2.5 h-0.75 w-0.75 border-2 border-background rounded-full bg-primary lg:(left-1.625 top-3)"></div>
+
+                <div class="timeline-content ml-4 pb-8 lg:ml-8">
+                  {/* Date */}
+                  <div class="timeline-date mb-1.5 text-3.25 c-secondary/75 font-time lg:text-3.5">
+                    <PostDate
+                      date={post.data.published}
+                      minutes={post.remarkPluginFrontmatter.minutes}
+                    />
+                  </div>
+
+                  {/* Post title */}
+                  <h3 class="timeline-title">
+                    <a
+                      href={getPostPath(post)}
+                      class="text-4 c-primary font-medium leading-relaxed transition-colors lg:text-4.25 hover:c-secondary cjk:tracking-0.02em"
+                      transition:name={`post-${post.data.abbrlink || post.id}${lang ? `-${lang}` : ''}`}
+                      data-disable-theme-transition
+                    >
+                      {post.data.title}
+                    </a>
+                  </h3>
+
+                  {/* Tags */}
+                  {post.data.tags && post.data.tags.length > 0 && (
+                    <div class="timeline-tags mt-2 flex flex-wrap gap-1.5">
+                      {post.data.tags.slice(0, 3).map((tag: string) => (
+                        <span class="tag rounded bg-secondary/8 px-2 py-0.5 text-3 text-sm c-secondary/80 font-medium">
+                          {tag}
+                        </span>
+                      ))}
+                      {post.data.tags.length > 3 && (
+                        <span class="tag rounded bg-secondary/8 px-2 py-0.5 text-3 text-sm c-secondary/60">
+                          +{post.data.tags.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </article>
+            ))}
+        </div>
+      </section>
+    ))}
+</div>
+
+<style>
+  .timeline-container {
+    position: relative;
+  }
+
+  .timeline-year-section:last-child .timeline-item:last-child .timeline-line {
+    display: none;
+  }
+
+  .timeline-item:last-child .timeline-content {
+    padding-bottom: 0;
+  }
+
+  /* Smooth hover animations */
+  .timeline-title a {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .timeline-title a:hover {
+    transform: translateX(2px);
+  }
+
+  .tag {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .tag:hover {
+    background: var(--primary);
+    color: var(--background);
+  }
+
+  /* Timeline responsive adjustments */
+  @media (max-width: 640px) {
+    .timeline-dot {
+      left: -3px;
+      top: 12px;
+      width: 6px;
+      height: 6px;
+    }
+
+    .timeline-line {
+      left: 0;
+    }
+
+    .timeline-content {
+      margin-left: 16px;
+    }
+  }
+</style>
+

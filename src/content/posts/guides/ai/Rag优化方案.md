@@ -17,12 +17,10 @@ password: "rag-6"
 
 ## 1、 RAG优化方案
 
-
 1.  **混合检索 (Hybrid Search)**: 融合传统关键词（BM25）与现代向量（Semantic）搜索，兼顾精确匹配与语义理解。
 2.  **Reranker 精排**: 使用更强大的 AI 模型对初步检索结果进行二次排序，提升顶层结果的相关性。
 3.  **排序与体验优化**: 引入标题加权、日期衰减等策略优化排序，并通过高亮和聚类提升用户体验。
 4.  **智能查询扩展**: 结合动态词库和多种匹配模式（Match/Match Phrase），更好地理解用户意图。
-
 
 ## 2、 第一步：实现混合检索 (Hybrid Search)
 
@@ -74,7 +72,7 @@ public SearchResponse<MyDocument> hybridSearch(String userQuery, float[] queryVe
             .k(10)
             .numCandidates(50)
     );
-    
+
     // 3. 将两者组合在一个查询中
     // 注意: Elasticsearch 8.4+ 直接支持混合检索。对于旧版本，可能需要两次查询后在客户端融合。
     // 这里展示的是 8.4+ 的原生混合查询方式。
@@ -89,7 +87,7 @@ public SearchResponse<MyDocument> hybridSearch(String userQuery, float[] queryVe
                 .boost(0.5f) // 可选：给向量搜索结果一个权重
             )
             .build();
-    
+
     // 对于更灵活的融合（如 RRF），你也可以分开执行两个查询，然后在Java代码中融合结果。
     // RRF (Reciprocal Rank Fusion) 是一种更高级的客户端融合策略。
 
@@ -124,12 +122,12 @@ import java.util.stream.Collectors;
 public List<MyDocument> rerank(String userQuery, List<MyDocument> initialResults) {
     // Reranker 服务地址
     String rerankerApiEndpoint = "http://your-reranker-service.com/rerank";
-    
+
     // 构建请求体
     // 格式: [{"query": "user query", "text": "document content 1"}, {"query": "...", "text": "..."}]
     String requestBody = initialResults.stream()
-            .map(doc -> String.format("{\"query\": \"%s\", \"text\": \"%s\"}", 
-                                      escapeJson(userQuery), 
+            .map(doc -> String.format("{\"query\": \"%s\", \"text\": \"%s\"}",
+                                      escapeJson(userQuery),
                                       escapeJson(doc.getContent())))
             .collect(Collectors.joining(",", "[", "]"));
 
@@ -142,24 +140,24 @@ public List<MyDocument> rerank(String userQuery, List<MyDocument> initialResults
 
     try {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        
+
         // 解析 Reranker 返回的分数，并对 initialResults 进行重排序
         // 假设返回格式: [0.98, 0.23, 0.75, ...]
-        List<Double> scores = parseScores(response.body()); 
-        
+        List<Double> scores = parseScores(response.body());
+
         for (int i = 0; i < initialResults.size(); i++) {
             initialResults.get(i).setRerankScore(scores.get(i));
         }
 
         // 按 rerankScore 降序排序
         initialResults.sort((d1, d2) -> Double.compare(d2.getRerankScore(), d1.getRerankScore()));
-        
+
         return initialResults;
 
     } catch (Exception e) {
         // 异常处理：可选择返回原始结果或抛出异常
         e.printStackTrace();
-        return initialResults; 
+        return initialResults;
     }
 }
 
@@ -251,7 +249,7 @@ public SearchResponse<MyDocument> searchWithHighlight(String userQuery) throws I
             hit.source().setHighlightedContent(hit.highlight().get("content").get(0));
         }
     });
-    
+
     return response;
 }
 ```
@@ -311,16 +309,16 @@ public Query createMatchPhraseQuery(String userQuery) {
 
 ```java
 public class AdvancedRagService {
-    
+
     private ElasticsearchClient esClient;
     private EmbeddingServiceClient embeddingClient; // 模拟的向量生成服务
     private RerankerClient rerankerClient;         // 模拟的Reranker服务
     private LlmClient llmClient;                   // 模拟的大模型服务
 
     // ... 构造函数注入依赖
-    
+
     public String answer(String userQuery) {
-        
+
         // 1. 生成查询向量
         float[] queryVector = embeddingClient.generateVector(userQuery);
 
@@ -331,7 +329,7 @@ public class AdvancedRagService {
 
         // 3. Reranker 精排
         List<MyDocument> rerankedDocs = rerankerClient.rerank(userQuery, initialDocs);
-        
+
         // 4. 提取 Top-K 文档作为上下文
         List<String> contextSnippets = rerankedDocs.stream()
                                             .limit(3) // 取最相关的3个文档
@@ -341,14 +339,14 @@ public class AdvancedRagService {
         // 5. 构建 Prompt 并调用 LLM
         String context = String.join("\n---\n", contextSnippets);
         String prompt = String.format(
-            "基于以下信息回答问题: \"%s\". 信息: %s", 
-            userQuery, 
+            "基于以下信息回答问题: \"%s\". 信息: %s",
+            userQuery,
             context
         );
-        
+
         return llmClient.generateAnswer(prompt);
     }
-    
+
     private SearchResponse<MyDocument> searchWithOptimizations(String userQuery, float[] queryVector) {
         // ... 此处整合 Section 2 和 Section 4 的查询构建逻辑 ...
         // 返回一个包含混合搜索、日期衰减、高亮等功能的复杂查询结果

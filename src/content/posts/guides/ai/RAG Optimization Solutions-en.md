@@ -71,7 +71,7 @@ Enhance result presentation with:
 
 **Features:**
 - Title and content weighting
-- Date decay for temporal relevance  
+- Date decay for temporal relevance
 - Highlighting for better user experience
 - Snippet generation and extraction
 
@@ -85,8 +85,8 @@ Configure hybrid search with both BM25 and dense vector fields:
 {
   "mappings": {
     "properties": {
-      "title": {"type": "text"},
-      "content": {"type": "text"},
+      "title": { "type": "text" },
+      "content": { "type": "text" },
       "embedding": {
         "type": "dense_vector",
         "dims": 768
@@ -134,11 +134,11 @@ def rerank_results(query, documents, model):
     for doc in documents:
         score = model.predict(query, doc.content)
         scores.append(score)
-    
+
     # Sort by reranker scores
     ranked_results = sorted(
-        zip(documents, scores), 
-        key=lambda x: x[1], 
+        zip(documents, scores),
+        key=lambda x: x[1],
         reverse=True
     )
     return ranked_results
@@ -149,7 +149,7 @@ def rerank_results(query, documents, model):
 ### Evaluation Criteria
 
 - **Recall@K**: Percentage of relevant documents retrieved
-- **Precision@K**: Percentage of retrieved documents that are relevant  
+- **Precision@K**: Percentage of retrieved documents that are relevant
 - **nDCG@K**: Normalized discounted cumulative gain
 - **MRR**: Mean reciprocal rank
 

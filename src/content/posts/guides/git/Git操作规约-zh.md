@@ -60,10 +60,7 @@ feature(message-center): 开发消息发送落库功能。或者 feature: 开发
 
 分支命名：{type}_{time}_{describe}_{developer}
 
-
-
 #### 1、type
-
 
 - feature：新功能
 - fix：修补bug

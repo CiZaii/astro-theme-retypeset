@@ -40,7 +40,7 @@ Git Flow is a popular Git workflow model designed to better manage branches and 
 
 **Type:**
 - `feat`: New feature
-- `fix`: Bug fix  
+- `fix`: Bug fix
 - `docs`: Documentation changes
 - `style`: Code style changes (formatting, missing semicolons, etc.)
 - `refactor`: Code refactoring (neither new features nor bug fixes)
@@ -119,7 +119,7 @@ Fixes #789
 **Type:**
 - `feature`: New feature development
 - `bugfix`: Bug fixes
-- `hotfix`: Emergency production fixes  
+- `hotfix`: Emergency production fixes
 - `release`: Release preparation
 - `chore`: Maintenance tasks
 

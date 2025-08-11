@@ -1,0 +1,84 @@
+<script>
+async function loadGiteeRepoData(card: HTMLElement) {
+  const repo = card.dataset.repo
+  if (!repo) {
+    return
+  }
+
+  const avatar = card.getElementsByClassName('gtc-owner-avatar')[0] as HTMLElement
+  const desc = card.getElementsByClassName('gtc-repo-description')[0] as HTMLElement
+  const stars = card.getElementsByClassName('gtc-stars-count')[0] as HTMLElement
+  const forks = card.getElementsByClassName('gtc-forks-count')[0] as HTMLElement
+  const language = card.getElementsByClassName('gtc-language-info')[0] as HTMLElement
+
+  function updateCardUI(data: any) {
+    const numberFormat = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 })
+
+    if (avatar && data.owner?.avatar_url) {
+      avatar.style.backgroundImage = `url(${data.owner.avatar_url})`
+    }
+
+    if (desc) {
+      desc.textContent = data.description ?? '暂无描述'
+    }
+
+    if (stars) {
+      stars.textContent = numberFormat.format(data.stargazers_count ?? 0)
+    }
+
+    if (forks) {
+      forks.textContent = numberFormat.format(data.forks_count ?? 0)
+    }
+
+    if (language) {
+      language.textContent = data.language ?? '未知'
+    }
+  }
+
+  const cacheKey = `gitee-repo-${repo}`
+  const cached = sessionStorage.getItem(cacheKey)
+
+  if (!cached) {
+    try {
+      const response = await fetch(`https://gitee.com/api/v5/repos/${repo}`)
+
+      if (!response.ok) {
+        if (desc) {
+          const errorMessage = response.status === 404 ? '仓库未找到' : '加载仓库数据失败'
+          desc.textContent = errorMessage
+        }
+        return
+      }
+
+      const data = await response.json()
+
+      sessionStorage.setItem(cacheKey, JSON.stringify(data))
+      updateCardUI(data)
+    }
+    catch (error) {
+      console.error(`Failed to fetch ${repo}:`, error)
+      if (desc) {
+        desc.textContent = '加载失败'
+      }
+    }
+  }
+  else {
+    const data = JSON.parse(cached)
+    updateCardUI(data)
+  }
+}
+
+function setupGiteeCards() {
+  const cards = document.getElementsByClassName('gtc-container')
+  if (cards.length === 0) {
+    return
+  }
+
+  Array.from(cards).forEach((card) => {
+    loadGiteeRepoData(card as HTMLElement)
+  })
+}
+
+document.addEventListener('astro:page-load', setupGiteeCards)
+setupGiteeCards()
+</script>

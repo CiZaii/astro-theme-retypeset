@@ -6,6 +6,8 @@ export const ui = {
     posts: 'Beiträge',
     tags: 'Schlagwörter',
     about: 'Über',
+    archive: 'Archiv',
+    friends: 'Freunde',
     toc: 'Inhaltsverzeichnis',
     passwordProtection: {
       title: 'Dieser Beitrag ist passwortgeschützt',
@@ -23,6 +25,8 @@ export const ui = {
     posts: 'Posts',
     tags: 'Tags',
     about: 'About',
+    archive: 'Archive',
+    friends: 'Friends',
     toc: 'Table of Contents',
     passwordProtection: {
       title: 'This post is password protected',
@@ -40,6 +44,8 @@ export const ui = {
     posts: 'Artículos',
     tags: 'Etiquetas',
     about: 'Sobre',
+    archive: 'Archivo',
+    friends: 'Amigos',
     toc: 'Índice',
     passwordProtection: {
       title: 'Este artículo está protegido con contraseña',
@@ -57,6 +63,8 @@ export const ui = {
     posts: 'Articles',
     tags: 'Étiquettes',
     about: 'À propos',
+    archive: 'Archive',
+    friends: 'Amis',
     toc: 'Table des matières',
     passwordProtection: {
       title: 'Cet article est protégé par mot de passe',
@@ -74,6 +82,8 @@ export const ui = {
     posts: '記事',
     tags: 'タグ',
     about: '概要',
+    archive: 'アーカイブ',
+    friends: '友達',
     toc: '目次',
     passwordProtection: {
       title: 'この記事はパスワード保護されています',
@@ -91,6 +101,8 @@ export const ui = {
     posts: '게시물',
     tags: '태그',
     about: '소개',
+    archive: '아카이브',
+    friends: '친구들',
     toc: '목차',
     passwordProtection: {
       title: '이 게시물은 비밀번호로 보호됩니다',
@@ -108,6 +120,8 @@ export const ui = {
     posts: 'Artykuły',
     tags: 'Tagi',
     about: 'O stronie',
+    archive: 'Archiwum',
+    friends: 'Przyjaciele',
     toc: 'Spis treści',
     passwordProtection: {
       title: 'Ten artykuł jest chroniony hasłem',
@@ -125,6 +139,8 @@ export const ui = {
     posts: 'Artigos',
     tags: 'Tags',
     about: 'Sobre',
+    archive: 'Arquivo',
+    friends: 'Amigos',
     toc: 'Sumário',
     passwordProtection: {
       title: 'Este post está protegido por senha',
@@ -142,6 +158,8 @@ export const ui = {
     posts: 'Посты',
     tags: 'Теги',
     about: 'О себе',
+    archive: 'Архив',
+    friends: 'Друзья',
     toc: 'Оглавление',
     passwordProtection: {
       title: 'Этот пост защищен паролем',
@@ -159,6 +177,8 @@ export const ui = {
     posts: '文章',
     tags: '标签',
     about: '关于',
+    archive: '归档',
+    friends: '友链',
     toc: '目录',
     passwordProtection: {
       title: '这篇文章受密码保护',
@@ -176,6 +196,8 @@ export const ui = {
     posts: '文章',
     tags: '標籤',
     about: '關於',
+    archive: '歸檔',
+    friends: '友鏈',
     toc: '目錄',
     passwordProtection: {
       title: '這篇文章受密碼保護',

@@ -135,23 +135,22 @@ Arthas 命令丰富，可分为以下几类：
 
 # 🌐 Arthas Web Console
 
-Arthas 提供了图形化 Web Console，启动 Arthas 后访问：http://127.0.0.1:8563/  
+Arthas 提供了图形化 Web Console，启动 Arthas 后访问：http://127.0.0.1:8563/
 
 Web Console 与命令行功能一致，支持命令历史和实时反馈，便于团队协作与问题排查。
 
 # ⚠️ 注意事项
 
-- Arthas 是诊断工具，生产环境使用需谨慎，需申请审批，建议避免在高峰期操作。  
-- 某些命令（如 trace、watch、tt）会修改字节码，可能影响性能，长期运行可能带来内存泄漏风险。  
-- 增强类会在 Arthas 退出时自动重置，可手动执行 `reset` 命令。  
-- 生产环境使用时应严格权限控制和操作日志记录。  
+- Arthas 是诊断工具，生产环境使用需谨慎，需申请审批，建议避免在高峰期操作。
+- 某些命令（如 trace、watch、tt）会修改字节码，可能影响性能，长期运行可能带来内存泄漏风险。
+- 增强类会在 Arthas 退出时自动重置，可手动执行 `reset` 命令。
+- 生产环境使用时应严格权限控制和操作日志记录。
 
 # 📝 总结
 
 通过本文，您已掌握 Arthas 的基础知识和实战应用，能够使用它高效排查Java线上问题，提升调优能力。建议在项目中多练习，逐步熟练掌握这款强大工具。
 
-官方文档：https://arthas.aliyun.com/doc/  
-GitHub 仓库：https://github.com/alibaba/arthas  
-在线教程：https://arthas.aliyun.com/doc/arthas-tutorials.html  
-社区论坛：https://github.com/alibaba/arthas/discussions  
-
+官方文档：https://arthas.aliyun.com/doc/
+GitHub 仓库：https://github.com/alibaba/arthas
+在线教程：https://arthas.aliyun.com/doc/arthas-tutorials.html
+社区论坛：https://github.com/alibaba/arthas/discussions
